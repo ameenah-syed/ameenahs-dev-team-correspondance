@@ -1,0 +1,140 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Correspondence 036 — Raw Responses Migration Independent Review</title></head><body><h1>Correspondence 036 — Raw Responses Migration Independent Review</h1>
+<dl><dt>From</dt><dd>The Boulder - Senior Git Code Reviewer</dd><dt>To</dt><dd>Raven - Engineering Delivery and Loop Coordinator</dd><dt>Date</dt><dd>2026-07-16</dd><dt>Re</dt><dd>Independent review of Echo raw OpenAI Responses migration handoff</dd><dt>Correspondence Number</dt><dd>036</dd><dt>Source Thread</dt><dd>Not recorded in legacy source</dd><dt>Work Thread</dt><dd>Not recorded in legacy source</dd><dt>Role Thread</dt><dd>Not recorded in legacy source</dd><dt>Status</dt><dd>Recovered</dd><dt>Record Type</dt><dd>Historical recovery record</dd></dl>
+<h2>Request Summary</h2><p>Recover the unique autocleaneeg-icvision correspondence <code>003-raw-responses-migration-independent-review.html</code> from the Codex environment beginning July 8, 2026; preserve meaning, deduplicate copies, and honor the public boundary.</p><h2>Execution Update</h2><p>Raven preserved the historical artifact in its original semantic form, added a labeled completeness wrapper, and sanitized machine-local profile prefixes.</p><h2>Scope Limits</h2><p>No deleted messages or raw task transcripts were reconstructed, absent approvals inferred, or source meanings rewritten. The embedded source is a historical snapshot.</p>
+<h2>Evidence</h2><ul><li>Canonical identity: autocleaneeg-icvision / 003-raw-responses-migration-independent-review.html</li><li>SHA-256 prefix: <code>60cb644593a1</code></li><li>Session-index boundary: 2026-07-08T17:40:47Z.</li><li>Cipher approved publication after sanitization.</li></ul><h2>Conflict Status</h2><p>Flag/Respond/Decide/Document complete; completeness is reconciled with privacy through sanitized copies and metadata-only receipts.</p><h2>Execution Decision</h2><p>Accept this unique identity into the public archive.</p><h2>Verification</h2><p>Ledger reconciled hashes, duplicates, and chronology. Cipher screened sensitivity. The verifier checks identity, sections, addenda, and local paths.</p><h2>Next Actions</h2><ul><li>Retain the source.</li><li>Document corrections separately.</li><li>Verify the deployed route.</li></ul><h2>Publication Boundary</h2><p>Public recovery copy: machine-local profile prefixes replaced with &lt;USER_HOME&gt;; protected content is not published.</p>
+<section data-publication-addendum="true"><h2>Publication Addendum</h2><h3>Expanded Request Summary</h3><p>Integrate every canonical correspondence in the available environment history.</p><h3>Expanded Specialist Response or Execution Update</h3><p>Raven preserved the historical artifact in its original semantic form, added a labeled completeness wrapper, and sanitized machine-local profile prefixes.</p><h3>Evidence</h3><p>Logical identity and hash retained; sidecars and duplicates excluded.</p><h3>Verification</h3><p>Ledger and Cipher independently reviewed custody and privacy.</p><h3>Decision Custody</h3><p>PI authorized recovery; Raven reconciles publication; original authority is unchanged.</p><h3>Next Actions</h3><p>Verify route and preserve disposition.</p><h3>Publication Boundary</h3><p>Public recovery copy: machine-local profile prefixes replaced with &lt;USER_HOME&gt;; protected content is not published.</p></section><section data-historical-source='true'><hr><h2>Recovered Historical Source</h2><p><em>Sanitized originating artifact; missing current fields remain historical omissions.</em></p>
+  <article>
+    <header>
+      <p>Correspondence 003</p>
+      <p>Status: Revise required</p>
+      <p>Record type: Independent senior code review</p>
+      
+      <p><strong>Summary:</strong> Echo's item-57 base handoff and item-66 safety delta are not suitable for interim integration because neither is an applicable unified diff and the combined design retains dependency, failure-safety, input-bound, and verification gaps.</p>
+      <p><strong>Scope warning:</strong> This is review advice, not PI authority, merge approval, release approval, scientific validation, or evidence that the proposed code ran.</p>
+    </header>
+
+    <section>
+      <h2>Metadata</h2>
+      <dl>
+        <dt>From</dt><dd>The Boulder - Senior Git Code Reviewer</dd>
+        <dt>To</dt><dd>Raven - Engineering Delivery and Loop Coordinator</dd>
+        <dt>Date</dt><dd>2026-07-16</dd>
+        <dt>Re</dt><dd>Independent review of Echo raw OpenAI Responses migration handoff</dd>
+        <dt>Correspondence number</dt><dd>003</dd>
+        <dt>Source thread ID</dt><dd>019f6128-8fec-7371-9304-6814b15a78fd</dd>
+        <dt>Work thread ID</dt><dd>T-2026-07-16-001</dd>
+        <dt>Reviewer role thread ID</dt><dd>019f612b-7e78-7360-bf26-7ac092729c91</dd>
+        <dt>Maker task ID</dt><dd>019f6bd2-5d0c-7ca2-a119-f1a97e5b46ec</dd>
+        <dt>Origin</dt><dd>PI-originated through Raven</dd>
+        <dt>Approval state</dt><dd>Independent review approved; edits, live requests, dependency installation, release, and publication not approved</dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Request Summary</h2>
+      <p>The requested outcome was an independent accept-or-revise review of Echo item 57 plus item 66 before Raven performs interim integration. Review criteria covered patch coherence and applicability, fixed-host standard-library HTTPS transport, the current Responses request and response contract, 20 MiB request and 1 MiB response bounds, 25,000 output tokens, SDK removal, legacy <code>base_url</code> rejection, CLI/default propagation, and zero-confidence failure behavior that cannot trigger automatic exclusion.</p>
+      <p>Non-goals were implementation, patch application, live or credentialed requests, dependency installation, release, publication, and scientific validation. No additional specialist consultation was required for this bounded independent review.</p>
+    </section>
+
+    <section>
+      <h2>Specialist Response</h2>
+      <p><strong>Verdict: Revise.</strong> The fixed-host transport direction is sound, but the handoff cannot be integrated in its current form.</p>
+
+      <h3>Blocking findings</h3>
+      <ol>
+        <li><strong>Neither handoff is an applicable patch.</strong> Item 57 fails <code>git apply --check --whitespace=error-all -</code> with <code>corrupt patch at line 505</code>. Item 66 fails with <code>patch with only garbage at line 4</code> because its delta uses incomplete hunk headers. Raven cannot safely integrate or verify the proposed state from these artifacts.</li>
+        <li><strong>SDK dependency removal is incomplete.</strong> Item 57 removes <code>openai</code> from <code>pyproject.toml</code>, but <code>tox.ini</code> line 23 still installs <code>openai&gt;=1.0</code>. The lockfile regeneration plan alone does not remove that independently declared test dependency.</li>
+        <li><strong>Zero-confidence failure safety is incomplete in strip parsing.</strong> In <code>src/icvision/api.py::classify_strip_image</code>, an unsupported or missing returned label is converted to <code>other_artifact</code> while retaining the provider confidence or the default 0.8. <code>classify_components_strip_batch</code> can therefore mark that malformed result for automatic exclusion. Item 66 changes empty-batch and image-creation fallbacks but does not repair this path.</li>
+        <li><strong>Non-finite confidence is accepted.</strong> The proposed <code>classify_component_image_openai</code> converts confidence with <code>float()</code> and clamps it without first requiring a finite value. Python JSON parsing accepts non-standard <code>NaN</code>; the clamp can turn it into an exclusion-eligible value. Strip parsing has the same missing finite/range validation.</li>
+        <li><strong>The request-size bound is too late to bound resource use.</strong> <code>classify_component_image_openai</code> reads and base64-encodes the entire image before <code>_post_openai_response</code> checks the 20 MiB encoded request. A large local file can consume unbounded memory before the limit is enforced. A file-size preflight or bounded read is required before encoding, followed by the encoded-body check.</li>
+        <li><strong>Required regression evidence is incomplete.</strong> The proposed tests check the fixed host, context type, request fields, bounds, one incomplete response, direct <code>base_url</code> rejection, and selected zero-confidence fallbacks. They do not assert <code>SSLContext.check_hostname</code> and <code>CERT_REQUIRED</code>, key/raw-body absence from captured logs, CLI/core/compat <code>base_url</code> rejection, public default propagation, non-finite confidence rejection, invalid strip-label safety, non-200 sanitized errors, malformed response JSON, or missing/non-completed response status.</li>
+      </ol>
+
+      <h3>Accepted design elements</h3>
+      <ul>
+        <li>The proposed private <code>http.client.HTTPSConnection("api.openai.com", 443, context=ssl.create_default_context())</code> boundary fixes host, port, path, TLS verification source, and avoids redirect and ambient HTTP-proxy endpoint surfaces.</li>
+        <li>The request shape uses <code>POST /v1/responses</code>, JSON, Bearer authorization, <code>store:false</code>, bounded <code>max_output_tokens</code>, user text plus <code>input_image</code>, image detail, and reasoning effort.</li>
+        <li>The response design bounds reads, sanitizes HTTP/transport failures, rejects top-level errors and non-completed responses, handles <code>incomplete_details</code>, and searches message content for <code>output_text</code>.</li>
+        <li>Item 66's 25,000 output-token, 20 MiB request, 1 MiB response, and zero-confidence fallback intent matches the routed boundary even though the implementation and evidence are incomplete.</li>
+      </ul>
+
+      <h3>Required revision</h3>
+      <p>Echo should return one complete diff regenerated against <code>ea515fbbe1fbba1b326f2f3f9d91320a369449c5</code>, containing the base implementation, all safety changes, focused tests, <code>tox.ini</code> dependency removal, and no hand-edited <code>uv.lock</code>. The revised patch must pass <code>git apply --check</code> before Raven attempts integration.</p>
+    </section>
+
+    <section>
+      <h2>Scope Limits</h2>
+      <ul>
+        <li>No proposed patch was applied and no repository source, dependency, or lockfile was changed.</li>
+        <li>No live OpenAI request, credential use, dependency installation, build, or migrated-code pytest run occurred.</li>
+        <li>The review covered Echo's recorded item-57 and item-66 text and the current repository at HEAD; it did not review a committed or applied implementation.</li>
+        <li>The official Responses contract was checked for endpoint, image input, token bound, response status, incomplete details, and output content shape. Model entitlement and scientific performance were not tested or claimed.</li>
+        <li>No final merge, release, product, endpoint-policy, or scientific decision was made.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Evidence</h2>
+      <ul>
+        <li>Echo standing task read: task <code>019f6bd2-5d0c-7ca2-a119-f1a97e5b46ec</code>, item 57 and item 66.</li>
+        <li>Item-57 command: extract its <code>diff</code> fence from the local task JSONL and pipe it to <code>git apply --check --whitespace=error-all -</code>. Result: exit 128, <code>corrupt patch at line 505</code>.</li>
+        <li>Item-66 command: extract its <code>diff</code> fence and pipe it to the same check. Result: exit 128, <code>patch with only garbage at line 4</code>.</li>
+        <li>Dependency scan: <code>rg -n '(^|\s)(import|from) openai|openai&gt;=|openai\.OpenAI|AuthenticationError|APIConnectionError|RateLimitError|APIStatusError' src tests pyproject.toml tox.ini uv.lock</code>. Current baseline confirms the SDK in source, <code>pyproject.toml</code>, and <code>tox.ini</code>; the proposed diff omits the tox declaration.</li>
+        <li>Repository state: <code>git status --short --branch; git rev-parse HEAD</code>. Result: <code>main...origin/main</code>, clean before this artifact, HEAD <code>ea515fbbe1fbba1b326f2f3f9d91320a369449c5</code>.</li>
+        <li>Official contract evidence: <a href="https://developers.openai.com/api/reference/resources/responses/methods/create">Responses create reference</a> and <a href="https://developers.openai.com/api/docs/guides/images-vision">Images and vision guide</a>. The OpenAPI endpoint retrieved for review identifies <code>POST https://api.openai.com/v1/responses</code> and response status, error, incomplete details, output, image input, and output-token fields.</li>
+        <li><strong>Labeled inference:</strong> because neither patch is syntactically applicable, no post-patch syntax, import, runtime, or test result can be truthfully claimed until a corrected complete diff is produced and integrated.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Conflict Status</h2>
+      <p><strong>Flag:</strong> the reviewer disagrees with integrating the current handoff because the artifacts are not applicable and leave failure-safety gaps.</p>
+      <p><strong>Respond:</strong> this record supplies exact evidence and bounded revision requirements.</p>
+      <p><strong>Decide:</strong> pending Raven/PI custody; The Boulder does not make the final merge decision.</p>
+      <p><strong>Document:</strong> this canonical record documents the review. No separate specialist conflict was opened.</p>
+    </section>
+
+    <section>
+      <h2>Execution Decision or Update</h2>
+      <p>Disposition: <strong>Revise</strong>. Owner: Raven retains integration and decision custody; Echo is the proposed revision owner if Raven routes the work. Rationale: patch-format failures prevent safe application, and unresolved dependency and automatic-exclusion safety gaps prevent an accept recommendation. Remaining PI gate: final integration, merge, release, and any live validation remain human-gated.</p>
+    </section>
+
+    <section>
+      <h2>Verification</h2>
+      <dl>
+        <dt>Checker</dt><dd>The Boulder - Senior Git Code Reviewer</dd>
+        <dt>Patch applicability</dt><dd>Failed for both handoffs with the exact Git errors recorded above</dd>
+        <dt>Static semantic review</dt><dd>Completed against Echo's full local task record and current HEAD</dd>
+        <dt>Official contract check</dt><dd>Completed against the current OpenAI Responses endpoint specification and vision guide</dd>
+        <dt>Runtime tests</dt><dd>Not run because no corrected patch was applicable or integrated</dd>
+        <dt>Known gaps</dt><dd>No post-application syntax, test, lockfile, packaging, or network-denial evidence exists</dd>
+        <dt>Custody</dt><dd>Raven owns integration; this reviewer owns only the review record</dd>
+      </dl>
+
+      <h3>Offline verification required after revision</h3>
+      <pre><code>git apply --check path\to\revised-complete.patch
+git diff --check
+python -B -m pytest tests\test_raw_responses_api.py -q --maxfail=1 --no-cov -p no:cacheprovider
+python -B -m pytest tests\test_phase4_retry.py tests\test_strip_compatibility.py tests\test_phase3_cli_api.py tests\test_core.py -q --maxfail=1 --no-cov -p no:cacheprovider
+rg -n "import openai|openai\.OpenAI|openai&gt;=" src tests pyproject.toml tox.ini
+uv lock --offline
+uv lock --check
+git status --short</code></pre>
+    </section>
+
+    <section>
+      <h2>Next Actions</h2>
+      <ol>
+        <li><strong>Raven:</strong> route one complete-patch revision to Echo. Dependency: this review. Stop condition: revision scope is explicit. Expected artifact: one valid unified diff plus focused tests.</li>
+        <li><strong>Echo:</strong> regenerate the patch from current HEAD, address every blocker, and run <code>git apply --check</code> against a clean matching tree before handoff. Stop condition: the patch applies and offline focused checks are specified without live requests.</li>
+        <li><strong>Raven:</strong> integrate only after the corrected patch passes applicability, then route independent QA/re-review. Expected artifact: applied diff and exact command evidence.</li>
+        <li><strong>The Boulder:</strong> re-review the actual integrated diff when routed. Stop condition: findings reconciled or returned for another revision.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Publication Boundary</h2>
+      <p>Sensitivity: internal engineering review, potentially publishable only after Raven verifies completeness and determines that local paths and operational task identifiers are safe to retain or redact. No credentials, patient data, production API responses, or live scientific data are included. Test credentials referenced by the handoff are synthetic. This artifact must not be published directly by The Boulder and is not published merely because it exists in the project. Archive deployment requires Raven-routed integration and verification.</p>
+    </section>
+  </article>
+</section></body></html>

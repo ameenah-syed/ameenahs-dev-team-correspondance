@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Correspondence 031 — Loguru Windows IPC fallback</title></head><body><h1>Correspondence 031 — Loguru Windows IPC fallback</h1>
+<dl><dt>From</dt><dd>Beacon, Loop Pattern Operations Engineer</dd><dt>To</dt><dd>Raven, Engineering Delivery and Loop Coordinator</dd><dt>Date</dt><dd>2026-07-14</dd><dt>Re</dt><dd>Restricted Windows sandbox denial during pytest collection</dd><dt>Correspondence Number</dt><dd>031</dd><dt>Source Thread</dt><dd>Not recorded in legacy source</dd><dt>Work Thread</dt><dd>Not recorded in legacy source</dd><dt>Role Thread</dt><dd>Not recorded in legacy source</dd><dt>Status</dt><dd>Recovered</dd><dt>Record Type</dt><dd>Historical recovery record</dd></dl>
+<h2>Request Summary</h2><p>Recover the unique autocleaneeg_pipeline correspondence <code>026-t-2026-07-14-002-loguru-ipc-fallback.html</code> from the Codex environment beginning July 8, 2026; preserve meaning, deduplicate copies, and honor the public boundary.</p><h2>Execution Update</h2><p>Raven preserved the historical artifact in its original semantic form, added a labeled completeness wrapper, and sanitized machine-local profile prefixes.</p><h2>Scope Limits</h2><p>No deleted messages or raw task transcripts were reconstructed, absent approvals inferred, or source meanings rewritten. The embedded source is a historical snapshot.</p>
+<h2>Evidence</h2><ul><li>Canonical identity: autocleaneeg_pipeline / 026-t-2026-07-14-002-loguru-ipc-fallback.html</li><li>SHA-256 prefix: <code>f61291937ab8</code></li><li>Session-index boundary: 2026-07-08T17:40:47Z.</li><li>Cipher approved publication after sanitization.</li></ul><h2>Conflict Status</h2><p>Flag/Respond/Decide/Document complete; completeness is reconciled with privacy through sanitized copies and metadata-only receipts.</p><h2>Execution Decision</h2><p>Accept this unique identity into the public archive.</p><h2>Verification</h2><p>Ledger reconciled hashes, duplicates, and chronology. Cipher screened sensitivity. The verifier checks identity, sections, addenda, and local paths.</p><h2>Next Actions</h2><ul><li>Retain the source.</li><li>Document corrections separately.</li><li>Verify the deployed route.</li></ul><h2>Publication Boundary</h2><p>Public recovery copy: machine-local profile prefixes replaced with &lt;USER_HOME&gt;; protected content is not published.</p>
+<section data-publication-addendum="true"><h2>Publication Addendum</h2><h3>Expanded Request Summary</h3><p>Integrate every canonical correspondence in the available environment history.</p><h3>Expanded Specialist Response or Execution Update</h3><p>Raven preserved the historical artifact in its original semantic form, added a labeled completeness wrapper, and sanitized machine-local profile prefixes.</p><h3>Evidence</h3><p>Logical identity and hash retained; sidecars and duplicates excluded.</p><h3>Verification</h3><p>Ledger and Cipher independently reviewed custody and privacy.</p><h3>Decision Custody</h3><p>PI authorized recovery; Raven reconciles publication; original authority is unchanged.</p><h3>Next Actions</h3><p>Verify route and preserve disposition.</p><h3>Publication Boundary</h3><p>Public recovery copy: machine-local profile prefixes replaced with &lt;USER_HOME&gt;; protected content is not published.</p></section><section data-historical-source='true'><hr><h2>Recovered Historical Source</h2><p><em>Sanitized originating artifact; missing current fields remain historical omissions.</em></p>
+  <main>
+    
+    <dl>
+      <dt>From</dt>
+      <dd>Beacon, Loop Pattern Operations Engineer</dd>
+      <dt>To</dt>
+      <dd>Raven, Engineering Delivery and Loop Coordinator</dd>
+      <dt>Date</dt>
+      <dd>2026-07-14</dd>
+      <dt>Re</dt>
+      <dd>Restricted Windows sandbox denial during pytest collection</dd>
+      <dt>Source thread ID</dt>
+      <dd>019f5c8e-dbda-7590-ba77-bdca6202e571</dd>
+      <dt>Local thread ID</dt>
+      <dd>T-2026-07-14-002</dd>
+      <dt>Origin</dt>
+      <dd>PI-originated; explicitly approved</dd>
+    </dl>
+
+    <h2>Request Summary</h2>
+    <p>Diagnose the Loguru collection failure, implement the narrow fix, add
+    regression tests, record durable guidance, and prepare a cross-project
+    agent broadcast.</p>
+
+    <h2>Specialist Response</h2>
+    <p>The queued Loguru file sink creates a multiprocessing queue and Windows
+    pipe. The restricted token denies that IPC operation with WinError 5 before
+    pytest collects tests. A focused unrestricted run passes, and changing
+    pytest basetemp does not affect the denied IPC boundary.</p>
+
+    <h2>Scope Limits</h2>
+    <p>The change catches only PermissionError from creation of the queued file
+    sink and retries the same sink once synchronously. It does not disable
+    logging, swallow unrelated failures, change scientific behavior, add a
+    dependency, or alter other sinks.</p>
+
+    <h2>Conflict Status</h2>
+    <p>No conflict identified.</p>
+
+    <h2>Execution Decision</h2>
+    <p>Preserve the queued normal path. On the concrete Windows IPC permission
+    denial, retry with enqueue disabled while preserving every other file-sink
+    option. Verify both branches with mocked focused unit tests, then run named
+    Ruff and Black checks. Raven remains integration owner and owns the actual
+    cross-project broadcast.</p>
+  </main>
+</section></body></html>

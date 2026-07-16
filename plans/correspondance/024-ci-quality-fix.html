@@ -1,0 +1,33 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Correspondence 024 — T-2026-07-09-219 CI Quality Fix</title></head><body><h1>Correspondence 024 — T-2026-07-09-219 CI Quality Fix</h1>
+<dl><dt>From</dt><dd>Raven</dd><dt>To</dt><dd>Principal Investigator</dd><dt>Date</dt><dd>2026-07-13</dd><dt>Re</dt><dd>PR #225 / branch 219-bug-accept-mne-baseepochs-inputs</dd><dt>Correspondence Number</dt><dd>024</dd><dt>Source Thread</dt><dd>Not recorded in legacy source</dd><dt>Work Thread</dt><dd>Not recorded in legacy source</dd><dt>Role Thread</dt><dd>Not recorded in legacy source</dd><dt>Status</dt><dd>Recovered</dd><dt>Record Type</dt><dd>Historical recovery record</dd></dl>
+<h2>Request Summary</h2><p>Recover the unique autocleaneeg_pipeline correspondence <code>001-t-2026-07-09-219-ci-quality-fix.html</code> from the Codex environment beginning July 8, 2026; preserve meaning, deduplicate copies, and honor the public boundary.</p><h2>Execution Update</h2><p>Raven preserved the historical artifact in its original semantic form, added a labeled completeness wrapper, and sanitized machine-local profile prefixes.</p><h2>Scope Limits</h2><p>No deleted messages or raw task transcripts were reconstructed, absent approvals inferred, or source meanings rewritten. The embedded source is a historical snapshot.</p>
+<h2>Evidence</h2><ul><li>Canonical identity: autocleaneeg_pipeline / 001-t-2026-07-09-219-ci-quality-fix.html</li><li>SHA-256 prefix: <code>6daf823f2630</code></li><li>Session-index boundary: 2026-07-08T17:40:47Z.</li><li>Cipher approved publication after sanitization.</li></ul><h2>Conflict Status</h2><p>Flag/Respond/Decide/Document complete; completeness is reconciled with privacy through sanitized copies and metadata-only receipts.</p><h2>Execution Decision</h2><p>Accept this unique identity into the public archive.</p><h2>Verification</h2><p>Ledger reconciled hashes, duplicates, and chronology. Cipher screened sensitivity. The verifier checks identity, sections, addenda, and local paths.</p><h2>Next Actions</h2><ul><li>Retain the source.</li><li>Document corrections separately.</li><li>Verify the deployed route.</li></ul><h2>Publication Boundary</h2><p>Public recovery copy: machine-local profile prefixes replaced with &lt;USER_HOME&gt;; protected content is not published.</p>
+<section data-publication-addendum="true"><h2>Publication Addendum</h2><h3>Expanded Request Summary</h3><p>Integrate every canonical correspondence in the available environment history.</p><h3>Expanded Specialist Response or Execution Update</h3><p>Raven preserved the historical artifact in its original semantic form, added a labeled completeness wrapper, and sanitized machine-local profile prefixes.</p><h3>Evidence</h3><p>Logical identity and hash retained; sidecars and duplicates excluded.</p><h3>Verification</h3><p>Ledger and Cipher independently reviewed custody and privacy.</p><h3>Decision Custody</h3><p>PI authorized recovery; Raven reconciles publication; original authority is unchanged.</p><h3>Next Actions</h3><p>Verify route and preserve disposition.</p><h3>Publication Boundary</h3><p>Public recovery copy: machine-local profile prefixes replaced with &lt;USER_HOME&gt;; protected content is not published.</p></section><section data-historical-source='true'><hr><h2>Recovered Historical Source</h2><p><em>Sanitized originating artifact; missing current fields remain historical omissions.</em></p>
+  
+  <dl>
+    <dt>From</dt><dd>Raven</dd>
+    <dt>To</dt><dd>Principal Investigator</dd>
+    <dt>Date</dt><dd>2026-07-09</dd>
+    <dt>Re</dt><dd>PR #225 / branch 219-bug-accept-mne-baseepochs-inputs</dd>
+    <dt>Thread IDs</dt><dd>Source: current PI task; local: T-2026-07-09-219</dd>
+  </dl>
+
+  <h2>Request Summary</h2>
+  <p>Fix the issues on branch 219-bug-accept-mne-baseepochs-inputs using the Raven-led team workflow.</p>
+
+  <h2>Execution Update</h2>
+  <p>The PI approved Raven's plan. Echo applied Black formatting only to
+    <code>tests/unit/mixins/test_itc.py</code>, resolving the sole failing CI quality check.</p>
+
+  <h2>Scope Limits</h2>
+  <p>No merge, release, push, dependency change, or broad formatting was authorized. Concurrent changes to
+    <code>src/autoclean/mixins/signal_processing/channels.py</code> and
+    <code>src/autoclean/utils/bad_channel_presets.py</code>, plus the pre-existing untracked
+    <code>.codex/</code> directory, belong to separate work and were not modified or included.</p>
+
+  <h2>Conflict Status</h2>
+  <p>No implementation conflict. Cricket observed unrelated concurrent shared-worktree changes; Raven preserved and excluded them.</p>
+
+  <h2>Execution Decision</h2>
+  <p>Accept the formatting-only correction. Cricket independently confirmed Black and isort checks pass and all five targeted tests pass with coverage disabled. The default isolated pytest invocation ran all five tests successfully but exited nonzero because repository-wide coverage was 4.83%, below the global 15% threshold.</p>
+</section></body></html>

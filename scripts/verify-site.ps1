@@ -15,7 +15,7 @@ foreach ($asset in @('styles.css','correspondence.js','app.js')) {
 foreach ($contract in @('Request Summary','Scope Limits','Conflict Status','Execution Decision','Evidence','Verification','Next Actions','Publication Boundary')) {
   if ($agents -notmatch [regex]::Escape($contract)) { throw "AGENTS.md is missing completeness field: $contract" }
 }
-$ids = @([regex]::Matches($data,'id:\s*"(\d{3})"') | ForEach-Object { $_.Groups[1].Value })
+$ids = @([regex]::Matches($data,'(?:id|"id")\s*:\s*"(\d{3})"') | ForEach-Object { $_.Groups[1].Value })
 if (-not $ids.Count) { throw 'No correspondence records found' }
 if (($ids | Select-Object -Unique).Count -ne $ids.Count) { throw 'Duplicate correspondence IDs found' }
 $expected = @(1..$ids.Count | ForEach-Object { $_.ToString('000') })
