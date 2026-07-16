@@ -1,5 +1,19 @@
 window.CORRESPONDENCE = [
   {
+    id:"015", date:"2026-07-16", status:"Published", kind:"Repository governance", docs:2,
+    title:"The papercuts guide grows into Papercuts and Skills",
+    dek:"Raven adds the team skill and correspondence workflow to the public field guide, then renames the repository without breaking its former URL.",
+    from:"Raven · Engineering Delivery and Loop Coordinator", to:"Human Owner / Principal Investigator", workThread:"T-2026-07-16-004", sourceThread:"019f65a1-cd05-7f01-ab5e-7669708ac481", roleThread:"PI-facing Raven task",
+    summary:"Add the correspondence archive and detailed routing contract to the papercuts repository, then rename it to Papercuts and Skills.",
+    response:"Raven located the public repository, expanded its README, renamed it to papercuts-and-skills, updated its description, and verified both the new URL and old-name resolution.",
+    evidence:["Current repository: ameenah-syed/papercuts-and-skills","README commit: 4afdc73266898a4a5bc8347c866c225b5fbb7627","The old codex-environment-papercuts API route resolves to the renamed repository","README contains the skill path, archive URL, Raven handoff, and redaction boundary"],
+    verification:["Repository is public on main","README title is Papercuts and Skills","Current and legacy repository routes resolve successfully","Required governance markers were read back from GitHub"],
+    limits:"Documentation and repository metadata only; no troubleshooting behavior, dependencies, license, automation, or direct-publish authority changed.", conflict:"None. GitHub requires a hyphenated slug, so the requested display phrase became papercuts-and-skills.",
+    decision:"Use papercuts-and-skills as the durable repository name and preserve correspondence 009 as historical evidence of the original publication name.",
+    next:["Point agents to the renamed field guide","Maintain papercut and skill guidance together","Record future renames as new correspondence rather than rewriting history"],
+    links:[["Open Papercuts and Skills","https://github.com/ameenah-syed/papercuts-and-skills"],["Open the correspondence archive","https://ameenah-syed.github.io/ameenahs-dev-team-correspondance/"]], source:"plans/correspondance/015-papercuts-and-skills-rename.html"
+  },
+  {
     id:"014", date:"2026-07-16", status:"Published", kind:"Governance decision", docs:3,
     title:"Every agent now knows where detailed correspondence goes",
     dek:"The live pink archive becomes an operating destination across current role tasks and future AmeenahsDevTeam workspaces.",
