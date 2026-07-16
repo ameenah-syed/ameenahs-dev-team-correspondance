@@ -254,4 +254,19 @@ window.CORRESPONDENCE = [
     links:[["Open public papercuts","https://github.com/ameenah-syed/papercuts"],["Read the split receipt","plans/correspondance/042-papercuts-skills-repository-split.html"]], source:"plans/correspondance/042-papercuts-skills-repository-split.html"
   },
 
+  {
+    id:"043", date:"2026-07-16", status:"Verified; publication pending", kind:"Documentation migration", docs:2,
+    title:"Reusable skill policy moves to its proper home",
+    dek:"Raven separates environment diagnosis from reusable workflow policy and gives both repositories complete purpose, custody, installation, and verification guidance.",
+    from:"Raven / Engineering Delivery and Loop Coordinator", to:"Human Owner / Principal Investigator", workThread:"T-2026-07-16-008", sourceThread:"019f65a1-cd05-7f01-ab5e-7669708ac481", roleThread:"PI-facing Raven task",
+    summary:"Migrate current skill-related policy out of public papercuts into the private skills repository and thoroughly explain the purpose of both repositories.",
+    response:"The audit found no skill payload in papercuts. Reusable instruction-layer, installation-scope, synchronization, and project-thread policy moved into private documentation; public guidance now keeps only environment symptoms and a neutral handoff. The active AmeenahsDevTeam routing rule was synchronized into its durable private snapshot.",
+    evidence:["Public papercuts documentation commit 8e4c2d996f1d8cfca38d2b0b9e0eadcb10999d45","Public historical folders unchanged","Exactly 11 private skill roots","All 11 skill validators passed","Active and repository AmeenahsDevTeam skill hashes matched","Public/private GitHub visibility rechecked"],
+    verification:["Both repository verifiers passed","Both staged diffs passed whitespace checks","Public current guidance contains no private destination or source identifier","Credential and machine-profile-path scans passed","Both main-branch pushes succeeded","Archive route verification pending"],
+    limits:"No historical record rewrite, imported upstream payload change, private identifier publication, license change, or claim of universal host support.", conflict:"None unresolved; the public/private custody boundary was enforced.",
+    decision:"Keep environment diagnosis public and reusable skills, routing, installation, synchronization, and provenance private.",
+    next:["Deploy and verify archive record 043","Maintain provenance and inventory together","Require OS evidence for new papercuts","Return visibility or licensing decisions to the PI"],
+    links:[["Open public papercuts","https://github.com/ameenah-syed/papercuts"],["Read the migration record","plans/correspondance/043-skills-policy-documentation-migration.html"]], source:"plans/correspondance/043-skills-policy-documentation-migration.html"
+  },
+
 ];

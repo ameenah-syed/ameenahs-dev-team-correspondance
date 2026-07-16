@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Correspondence 043 - Skills policy and documentation migration</title></head>
+<body>
+<h1>Correspondence 043 - Skills policy and documentation migration</h1>
+<dl>
+<dt>From</dt><dd>Raven &middot; Engineering Delivery and Loop Coordinator</dd>
+<dt>To</dt><dd>Human Owner / Principal Investigator</dd>
+<dt>Date</dt><dd>2026-07-16</dd>
+<dt>Re</dt><dd>Move reusable skill guidance out of papercuts and thoroughly document both repositories</dd>
+<dt>Correspondence Number</dt><dd>043</dd>
+<dt>Source Thread</dt><dd>019f65a1-cd05-7f01-ab5e-7669708ac481</dd>
+<dt>Work Thread</dt><dd>T-2026-07-16-008</dd>
+<dt>Role Thread</dt><dd>PI-facing Raven task; no cross-project specialist thread used</dd>
+<dt>Status</dt><dd>Verified; archive publication pending</dd>
+<dt>Record Type</dt><dd>Documentation migration and repository-boundary execution update</dd>
+</dl>
+<h2>Request Summary</h2>
+<p>The PI asked Raven to ensure that skill-related material remaining in the public papercuts repository was migrated into the private skills repository, and to make both READMEs thorough explanations of their respective purposes. The desired outcome was a clean custody boundary: public, environment-dependent diagnosis in papercuts and reusable, cross-project workflow material in the private skills repository. Historical records were non-goals for rewriting because they preserve the decisions and names that existed at the time.</p>
+<p>The request authorized repository documentation changes and publication to the existing repositories. It did not authorize exposing the private destination, changing imported skill licensing, making the skills repository public, modifying skill behavior beyond synchronizing an already-active accepted team rule, or claiming unsupported macOS/Linux execution.</p>
+<h2>Execution Update</h2>
+<p>Raven audited the current papercuts tree and found no <code>SKILL.md</code> payload or complete reusable skill directory. The remaining current reusable material was policy about instruction layers, global-versus-project installations, and project-scoped thread routing. Raven moved that policy into a new private scope-and-routing guide, added a migration custody record, synchronized the accepted active AmeenahsDevTeam thread-verification rule into the private repository snapshot, and reduced the public path page to environment symptoms and a neutral handoff.</p>
+<p>The papercuts README now explains its audience, ownership boundary, OS lanes, diagnostic workflow, repository map, Windows entry point, safety model, contribution evidence, verification, provenance, and limitations. The private skills README now explains what a skill is, portability limits, repository boundaries, all 11 skill roots, installation on Windows and POSIX hosts, active-skill synchronization, validation, updating, privacy, licensing, migration custody, and maintenance.</p>
+<h2>Scope Limits</h2>
+<p>No historical correspondence or planning record in papercuts was moved or rewritten. No imported upstream skill payload was modified. The only skill-content change synchronized an already-active AmeenahsDevTeam rule into its durable private snapshot. The private repository name, source identity, commit identifiers, and protected contents are withheld from this public record. No independent cross-project role thread was consulted because the active project-scoped routing rule forbids reusing same-named threads across projects without explicit PI authorization.</p>
+<h2>Evidence</h2>
+<ul>
+<li>Public papercuts repository: <a href="https://github.com/ameenah-syed/papercuts">ameenah-syed/papercuts</a>.</li>
+<li>Public papercuts documentation commit: <code>8e4c2d996f1d8cfca38d2b0b9e0eadcb10999d45</code>.</li>
+<li>The public repository verifier passed 16 required files, all OS lanes, the no-skill-payload boundary, and machine-profile-path screening.</li>
+<li>The public current-guidance disclosure scan found no private skills repository or source identifier.</li>
+<li>The private repository verifier passed eight required repository files, exactly 11 skill roots, the pinned lock inventory, no nested Git repository, and no expanded machine-local profile path.</li>
+<li>All 11 skill entry points passed the Codex skill validator with UTF-8 mode enabled.</li>
+<li>The private AmeenahsDevTeam snapshot and active installation had the same SHA-256 digest after synchronization.</li>
+<li>GitHub metadata confirmed the papercuts repository remained public and the skills destination remained private before publication.</li>
+</ul>
+<h2>Conflict Status</h2>
+<p>No unresolved conflict. The public/private boundary was treated as a hard gate: reusable policy moved private, environment symptoms stayed public, and historical records remained immutable provenance. The pre-existing public path-document edit was not discarded; its reusable thread-routing substance was transferred into the private guide and active team skill.</p>
+<h2>Execution Decision</h2>
+<p>Accept the custody split and publish both documentation updates. Papercuts is the public environment field guide. The private skills repository is the durable source for reusable workflows, installation and synchronization policy, provenance, and validation. Keep the skills destination private until a separate rights and publication review authorizes otherwise.</p>
+<h2>Verification</h2>
+<p>Raven ran both repository verifiers, <code>git diff --check</code>, the 11 per-skill validators, exact active-versus-repository skill hashing, public disclosure scanning, credential/profile-path screening, GitHub visibility readback, staged-scope review, commit, and push. Both main branches advanced successfully.</p>
+<p>The previously documented <code>cursor-agent-cli</code> Python unit suite was not rerun. Its last attempt was blocked before test execution by the Windows restricted-token sandbox denying temporary child <code>bin</code> directories. That remains an environment verification gap, not a pass and not proof of a code defect.</p>
+<h2>Next Actions</h2>
+<ul>
+<li>Owner: Raven. Dependency: correspondence deployment. Stop condition: record 043 resolves from the public archive. Expected artifact: verified public route.</li>
+<li>Owner: future skills maintainer. Dependency: any imported update. Stop condition: provenance, lock inventory, README, validators, and supported tests agree. Expected artifact: reviewed private commit.</li>
+<li>Owner: future papercuts contributor. Dependency: reproducible host evidence. Stop condition: one bounded recovery and verification are documented. Expected artifact: OS-scoped public diagnostic guidance.</li>
+<li>Human handoff: any visibility, licensing, cross-project consultation, credential, dependency-installation, or redistribution decision returns to the PI.</li>
+</ul>
+<h2>Publication Boundary</h2>
+<p>Public-safe execution summary only. It exposes the public papercuts repository and public commit but withholds private repository identifiers, private source identifiers, private commits, private contents, credentials, and protected history. The 11-skill count is aggregate completeness evidence. No production, unattended operation, or redistribution authority is implied.</p>
+<section data-publication-addendum="true">
+<h2>Publication Addendum</h2>
+<h3>Expanded Request Summary</h3><p>Complete the public/private custody split by moving reusable policy into the private skills source and explaining both repositories thoroughly.</p>
+<h3>Expanded Specialist Response or Execution Update</h3><p>Raven performed the bounded repository audit and documentation migration directly. No project-scoped specialist thread was available or authorized across repositories, so deterministic checks supplied the verification evidence.</p>
+<h3>Evidence</h3><p>Evidence includes repository-tree inventory, staged diffs, public disclosure scans, exact GitHub visibility, repository verifiers, 11 skill validators, active-snapshot hash equality, and successful main-branch pushes.</p>
+<h3>Verification</h3><p>All supported checks passed. The known Windows temporary-directory blocker remains explicitly not run and not passed.</p>
+<h3>Decision Custody</h3><p>The PI authorized the migration and thorough documentation. Raven made bounded documentation and synchronization decisions. The PI retains visibility, licensing, redistribution, and cross-project consultation authority.</p>
+<h3>Next Actions</h3><p>Verify the archive route, then maintain the repositories under their separate public-environment and private-workflow contracts.</p>
+<h3>Publication Boundary</h3><p>This record publishes only aggregate private completeness evidence and no protected identifier or content.</p>
+</section>
+</body>
+</html>
