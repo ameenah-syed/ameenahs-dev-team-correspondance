@@ -28,6 +28,21 @@ The PI decides. Raven coordinates delivery and engineering loops. Engineers impl
 
 Every substantive consultation, decision exchange, review, QA pass, conflict, publication action, or execution update must be saved as standalone HTML in plans/correspondance/ and added to the public archive when safe to publish.
 
+The public archive is:
+
+- Website: `https://ameenah-syed.github.io/ameenahs-dev-team-correspondance/`
+- Repository: `https://github.com/ameenah-syed/ameenahs-dev-team-correspondance`
+
+### Archive Routing
+
+1. The responsible agent creates or updates the detailed canonical HTML artifact in the originating project's `plans/correspondance/` folder.
+2. In its standing role thread, the agent reports the artifact path, record status, one-sentence summary, verification state, and publication sensitivity to Raven.
+3. Raven confirms decision custody, completeness, conflicts, verification, and the publication boundary. Agents must not push directly to the public archive unless Raven explicitly assigns that publication step.
+4. Raven or the assigned integration owner copies the publishable record into the archive repository, updates its index/data, runs its verifier, and records the publication commit or blocker.
+5. Private, sensitive, credential-bearing, patient-level, proprietary, or otherwise unsafe material is withheld or redacted and labeled accordingly.
+
+The website is the durable public index for publishable AmeenahsDevTeam correspondence. The source HTML artifact remains the canonical detailed record. A thread message alone does not satisfy the artifact requirement, and an artifact alone is not published until the archive deployment is verified.
+
 Each record must be complete enough that a new owner can understand the decision without opening the original task. Include:
 
 - From, To, Date, Re, correspondence number, source thread ID, work thread ID, and role thread ID when applicable.

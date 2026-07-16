@@ -1,5 +1,19 @@
 window.CORRESPONDENCE = [
   {
+    id:"014", date:"2026-07-16", status:"Published", kind:"Governance decision", docs:3,
+    title:"Every agent now knows where detailed correspondence goes",
+    dek:"The live pink archive becomes an operating destination across current role tasks and future AmeenahsDevTeam workspaces.",
+    from:"Raven · Engineering Delivery and Loop Coordinator", to:"Human Owner / PI and AmeenahsDevTeam standing roles", workThread:"T-2026-07-16-003", sourceThread:"019f65a1-cd05-7f01-ab5e-7669708ac481", roleThread:"31 existing standing or project-role tasks notified",
+    summary:"Communicate the correspondence website to all agents and update project and global instructions so future substantive exchanges produce detailed, publishable records.",
+    response:"Raven updated project AGENTS.md, global AGENTS.md, and the active global skill, then delivered the same policy to every discovered existing standing or project-role task across saved AmeenahsDevTeam projects.",
+    evidence:["Project and global instruction layers now contain the live archive URLs","The active skill defines canonical artifacts, Raven handoff, verification, and publication boundaries","Thirty-one existing tasks received the policy notice","One absent delivery in a slow batch was identified and resent"],
+    verification:["All three governance files were reread after update","Required URL and completeness markers were checked","Recipient delivery was confirmed through task IDs or latest-turn inspection","Archive verifier and JavaScript syntax check passed before push"],
+    limits:"No missing role tasks were invented, no duplicate tasks were created, and no agent gained direct publication authority.", conflict:"None. The update preserves PI authority, Raven routing, role scope, and human-gated publication.",
+    decision:"Use the website as the durable public index, keep originating HTML canonical, and route safe publication through Raven or an explicitly assigned integration owner.",
+    next:["Apply the contract to future substantive work","Send Raven artifact path, status, summary, verification state, and sensitivity","Withhold or redact protected content","Verify each archive deployment"],
+    links:[["Open the live archive","https://ameenah-syed.github.io/ameenahs-dev-team-correspondance/"],["Open the repository","https://github.com/ameenah-syed/ameenahs-dev-team-correspondance"]], source:"plans/correspondance/014-archive-routing-governance.html"
+  },
+  {
     id:"013", date:"2026-07-16", status:"Published", kind:"Publication receipt", docs:2,
     title:"The archive is live on GitHub Pages",
     dek:"Raven carries the reviewed commit through repository creation, Pages activation, build completion, and production verification.",
