@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Correspondence 042 - Papercuts and skills repository split</title></head>
+<body>
+<h1>Correspondence 042 - Papercuts and skills repository split</h1>
+<dl>
+<dt>From</dt><dd>Raven &middot; Engineering Delivery and Loop Coordinator</dd>
+<dt>To</dt><dd>Human Owner / Principal Investigator</dd>
+<dt>Date</dt><dd>2026-07-16</dd>
+<dt>Re</dt><dd>Separate environment-dependent papercuts from cross-system Codex skills</dd>
+<dt>Correspondence Number</dt><dd>042</dd>
+<dt>Source Thread</dt><dd>019f65a1-cd05-7f01-ab5e-7669708ac481</dd>
+<dt>Work Thread</dt><dd>T-2026-07-16-007</dd>
+<dt>Role Thread</dt><dd>Ledger 019f6b6b-30c9-7f62-bd15-2a113e9ef6e6; Cipher 019f6b6b-7edb-79f3-a848-708f631e4dbf; Cricket 019f6b6b-a6d3-7b50-b914-6df3ef4e752c</dd>
+<dt>Status</dt><dd>Verified; archive publication pending</dd>
+<dt>Record Type</dt><dd>Repository split, private bundle creation, and verification receipt</dd>
+</dl>
+<h2>Request Summary</h2>
+<p>The PI asked to separate the combined papercuts-and-skills repository into one environment-dependent papercuts repository and one cross-system skills repository. Papercuts should be able to evolve independently for Windows, macOS, and Linux. The PI also asked that every skill from an authorized private source bundle be included and explicitly required the resulting skills repository to remain private.</p>
+<h2>Execution Update</h2>
+<p>Raven renamed the existing public repository in place to preserve its identity and history, reorganized the handbook into shared, Windows, macOS, and Linux lanes, and retained Windows as the only verified platform. Raven created the skills destination as private from its first operation, preserved the authorized source main-branch history, imported every tree-discovered upstream skill, added the AmeenahsDevTeam operating skill, and recorded a pinned provenance and no-license boundary.</p>
+<p>Ledger identified that the source README undercounted the tree by two skills and recommended using the ten actual skill roots. Cipher required the private repository name to be removed from public papercuts navigation and required destination remotes and private visibility to be verified before push; Raven applied those corrections. Cricket independently returned PASS with one documented environment-level test blocker.</p>
+<h2>Scope Limits</h2>
+<p>The private repository name, private source repository name, private commit identifiers, private file contents, contributor identities, and internal destinations are withheld from this public record. No license was invented for imported material. macOS and Linux contain contribution requirements, not claims of verified troubleshooting support. No repository was made public after private import.</p>
+<h2>Evidence</h2>
+<ul>
+<li>Public papercuts repository: <a href="https://github.com/ameenah-syed/papercuts">ameenah-syed/papercuts</a>.</li>
+<li>Public history-preserving split commit: <code>16cc5af5ca0353c625f9fe052db16d51c67191ed</code>.</li>
+<li>The private destination was created with private visibility before its first push and remained private during authenticated metadata verification.</li>
+<li>The private inventory contains 11 skill roots: ten from the complete authorized source tree plus the AmeenahsDevTeam operating skill.</li>
+<li>All 11 skill entry points passed the Codex skill validator with UTF-8 mode enabled.</li>
+<li>The papercuts verifier passed 16 required files, OS lanes, profile-path checks, and the no-skill-payload boundary.</li>
+<li>The skills verifier passed the exact inventory, pinned ancestry, non-empty entry points, and no-nested-repository check.</li>
+</ul>
+<h2>Conflict Status</h2>
+<p>Flag/Respond/Decide/Document completed. Cipher flagged public disclosure of the private destination name and unsafe pre-push remote ambiguity. Raven accepted both findings, removed the private slug from public files, set exact destinations, verified visibility, and documented the boundary. No unresolved conflict remains.</p>
+<h2>Execution Decision</h2>
+<p>Accept the history-preserving public papercuts rename and the private skills bundle. Papercuts owns environment-specific troubleshooting; the private bundle owns reusable skills. Keep the bundle private unless the PI later supplies separate redistribution authority and a complete publication review.</p>
+<h2>Verification</h2>
+<p>Cricket independently verified both live visibility states, exact live/local commit custody, clean main branches at zero ahead/behind, the four papercuts lanes, both repository verifiers, zero public skill payloads, zero private-destination slug hits in current public documentation, 11 private skill roots, pinned upstream ancestry, provenance/no-license controls, and the non-destructive Windows installer by static review.</p>
+<p>The imported cursor-agent-cli unit suite remains blocked by the Windows restricted-token sandbox: two attempts failed before test execution when Python temporary directories could not create child <code>bin</code> directories. This is recorded as an environment verification gap, not a passing test and not evidence of a code defect.</p>
+<h2>Next Actions</h2>
+<ul>
+<li>Keep the skills repository private and restrict access to authorized users and agents.</li>
+<li>Add macOS and Linux papercuts only with environment-specific reproduction and verification evidence.</li>
+<li>Refresh the private source lock and inventory together when upstream skills change.</li>
+<li>Retain the blocked Python unit suite as a known gap until it can run in an environment with a functional temporary-directory boundary.</li>
+<li>Verify this public correspondence record after archive deployment.</li>
+</ul>
+<h2>Publication Boundary</h2>
+<p>Public-safe repository architecture and verification record only. It exposes the public papercuts URL and public commit, but withholds private repository identifiers, private source identifiers, private commit identifiers, private contents, credentials, and protected history. The count and categories of private skills are reported only at the level needed to prove completeness.</p>
+<section data-publication-addendum="true">
+<h2>Publication Addendum</h2>
+<h3>Expanded Request Summary</h3><p>Separate platform-specific troubleshooting from reusable skills, preserve repository history, import every authorized skill, and keep the skill bundle private.</p>
+<h3>Expanded Specialist Response or Execution Update</h3><p>Ledger supplied the split and provenance design, Cipher enforced the private/public trust boundary, Raven implemented the repositories, and Cricket independently checked live custody and content separation.</p>
+<h3>Evidence</h3><p>Evidence includes Git ancestry, exact repository metadata, clean tracking state, deterministic repository verifiers, 11 skill validators, and a public/private disclosure scan.</p>
+<h3>Verification</h3><p>Independent QA passed with the temporary-directory unit-test blocker explicitly retained.</p>
+<h3>Decision Custody</h3><p>The PI authorized the split and required private skills visibility. Raven made bounded implementation decisions; specialists advised and Cricket verified. The PI remains final authority.</p>
+<h3>Next Actions</h3><p>Maintain OS-specific evidence, private provenance, and explicit redistribution gates.</p>
+<h3>Publication Boundary</h3><p>Private identifiers and contents are withheld from this public archive record.</p>
+</section>
+</body>
+</html>
