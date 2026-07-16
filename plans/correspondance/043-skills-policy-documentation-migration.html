@@ -12,7 +12,7 @@
 <dt>Source Thread</dt><dd>019f65a1-cd05-7f01-ab5e-7669708ac481</dd>
 <dt>Work Thread</dt><dd>T-2026-07-16-008</dd>
 <dt>Role Thread</dt><dd>PI-facing Raven task; no cross-project specialist thread used</dd>
-<dt>Status</dt><dd>Verified; archive publication pending</dd>
+<dt>Status</dt><dd>Published and verified</dd>
 <dt>Record Type</dt><dd>Documentation migration and repository-boundary execution update</dd>
 </dl>
 <h2>Request Summary</h2>
@@ -26,7 +26,7 @@
 <h2>Evidence</h2>
 <ul>
 <li>Public papercuts repository: <a href="https://github.com/ameenah-syed/papercuts">ameenah-syed/papercuts</a>.</li>
-<li>Public papercuts documentation commit: <code>8e4c2d996f1d8cfca38d2b0b9e0eadcb10999d45</code>.</li>
+<li>Public papercuts documentation commit: <code>8e4c2d996f1d8cfca38d2b0b9e0eadcb10999d45</code>.</li><li>Archive publication commit: <code>ce68b8685444d148baa4f2344011c01cf75ed6d5</code>; Pages workflow <a href="https://github.com/ameenah-syed/ameenahs-dev-team-correspondance/actions/runs/29527250318">29527250318</a> completed successfully.</li>
 <li>The public repository verifier passed 16 required files, all OS lanes, the no-skill-payload boundary, and machine-profile-path screening.</li>
 <li>The public current-guidance disclosure scan found no private skills repository or source identifier.</li>
 <li>The private repository verifier passed eight required repository files, exactly 11 skill roots, the pinned lock inventory, no nested Git repository, and no expanded machine-local profile path.</li>
@@ -39,11 +39,11 @@
 <h2>Execution Decision</h2>
 <p>Accept the custody split and publish both documentation updates. Papercuts is the public environment field guide. The private skills repository is the durable source for reusable workflows, installation and synchronization policy, provenance, and validation. Keep the skills destination private until a separate rights and publication review authorizes otherwise.</p>
 <h2>Verification</h2>
-<p>Raven ran both repository verifiers, <code>git diff --check</code>, the 11 per-skill validators, exact active-versus-repository skill hashing, public disclosure scanning, credential/profile-path screening, GitHub visibility readback, staged-scope review, commit, and push. Both main branches advanced successfully.</p>
+<p>Raven ran both repository verifiers, <code>git diff --check</code>, the 11 per-skill validators, exact active-versus-repository skill hashing, public disclosure scanning, credential/profile-path screening, GitHub visibility readback, staged-scope review, commit, and push. Both main branches advanced successfully. GitHub Pages deployed the exact archive commit, and the canonical record plus data index returned HTTP 200 with record 043 present.</p>
 <p>The previously documented <code>cursor-agent-cli</code> Python unit suite was not rerun. Its last attempt was blocked before test execution by the Windows restricted-token sandbox denying temporary child <code>bin</code> directories. That remains an environment verification gap, not a pass and not proof of a code defect.</p>
 <h2>Next Actions</h2>
 <ul>
-<li>Owner: Raven. Dependency: correspondence deployment. Stop condition: record 043 resolves from the public archive. Expected artifact: verified public route.</li>
+<li>Owner: Raven. Dependency: any future correction. Stop condition: a later artifact preserves the original meaning and the verified route remains available. Expected artifact: separately documented correction.</li>
 <li>Owner: future skills maintainer. Dependency: any imported update. Stop condition: provenance, lock inventory, README, validators, and supported tests agree. Expected artifact: reviewed private commit.</li>
 <li>Owner: future papercuts contributor. Dependency: reproducible host evidence. Stop condition: one bounded recovery and verification are documented. Expected artifact: OS-scoped public diagnostic guidance.</li>
 <li>Human handoff: any visibility, licensing, cross-project consultation, credential, dependency-installation, or redistribution decision returns to the PI.</li>
