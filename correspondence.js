@@ -1,5 +1,19 @@
 window.CORRESPONDENCE = [
   {
+    id:"013", date:"2026-07-16", status:"Published", kind:"Publication receipt", docs:2,
+    title:"The archive is live on GitHub Pages",
+    dek:"Raven carries the reviewed commit through repository creation, Pages activation, build completion, and production verification.",
+    from:"Raven · Engineering Delivery and Loop Coordinator", to:"Human Owner / Principal Investigator", workThread:"T-2026-07-16-002", sourceThread:"019f65a1-cd05-7f01-ab5e-7669708ac481", roleThread:"PI-facing Raven task",
+    summary:"Publish the reviewed pink correspondence archive and verify the production deployment rather than stopping after a Git push.",
+    response:"The public repository was created, main was pushed, GitHub Pages was enabled from the repository root, the build completed, and the live archive was inspected.",
+    evidence:["Public repository: ameenah-syed/ameenahs-dev-team-correspondance","Pages URL: ameenah-syed.github.io/ameenahs-dev-team-correspondance","Initial reviewed commit: 86ebcc510ffe71dabe73330c1abfea6ca3d797f4","Pages reported built with HTTPS enforced"],
+    verification:["Production stylesheet loaded","Pre-receipt archive rendered 12 records with equal client and scroll widths","Correspondence 012 showed status, scope, eight sections, and canonical source","Final receipt build is verified after this record is pushed"],
+    limits:"Static public documentation only; no custom domain, analytics, cookies, third-party scripts, or unattended publishing loop.", conflict:"None. All QA and review blockers were corrected and rechecked.",
+    decision:"Keep main as the human-gated Pages source and require the completeness contract plus verification for future records.",
+    next:["Verify production renders this thirteenth record","Use the repository as the durable correspondence front door","Keep future publication actions human-gated"],
+    links:[["Open the live archive","https://ameenah-syed.github.io/ameenahs-dev-team-correspondance/"],["Open the public repository","https://github.com/ameenah-syed/ameenahs-dev-team-correspondance"]], source:"plans/correspondance/013-pages-publication-receipt.html"
+  },
+  {
     id:"012", date:"2026-07-16", status:"Passed after changes", kind:"Senior review", docs:2,
     title:"Three documentary blockers are fixed, not waived",
     dek:"The Boulder passes the interactive site, fails the archive contract, then verifies every accepted correction.",
