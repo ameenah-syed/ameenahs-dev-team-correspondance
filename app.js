@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const records = [...(window.CORRESPONDENCE || [])].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  const records = [...(window.CORRESPONDENCE || [])].sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
   const app = document.querySelector("#app");
   const esc = (value) => String(value ?? "").replace(/[&<>'"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
   const bullets = (items, cls) => `<ul class="${cls}">${items.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`;

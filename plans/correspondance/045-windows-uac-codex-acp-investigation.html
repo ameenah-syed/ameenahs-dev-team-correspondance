@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>045 - Windows UAC, Codex ACP, and Sandbox Permission Investigation</title>
+  <style>
+    body{max-width:980px;margin:2rem auto;padding:0 1.25rem 4rem;font:16px/1.55 system-ui,sans-serif;color:#17202a}h2{margin-top:2rem;border-bottom:1px solid #cbd5e1;padding-bottom:.3rem}h3{margin-top:1.4rem}dt{font-weight:700;margin-top:.6rem}dd{margin-left:0}code{font-family:ui-monospace,Consolas,monospace}.notice{padding:1rem;border:1px solid #f59e0b;background:#fff7ed}.status{padding:1rem;border:1px solid #10b981;background:#ecfdf5}table{width:100%;border-collapse:collapse}th,td{border:1px solid #cbd5e1;padding:.55rem;text-align:left;vertical-align:top}th{background:#f8fafc}
+  </style>
+</head>
+<body>
+  <p>Correspondence 045</p>
+  <h1>Windows UAC, Codex ACP, and Sandbox Permission Investigation</h1>
+  <p class="status"><strong>Status:</strong> Public-safe operational reference approved by the PI. The diagnosis is verified to the stated boundary; an end-to-end ACP session was not completed in the recorded proof of concept.</p>
+  <p class="notice"><strong>Scope warning:</strong> Temporary administrator elevation can unblock operations that genuinely require Windows administrator rights. It does not repair the separate Codex split-writable-root sandbox-policy defect, and it must not be treated as a universal permission fix.</p>
+
+  <h2>Metadata</h2>
+  <dl>
+    <dt>From</dt><dd>Raven - Engineering Delivery and Loop Coordinator</dd>
+    <dt>To</dt><dd>Principal Investigator and AmeenahsDevTeam operators</dd>
+    <dt>Date</dt><dd>2026-07-17, America/New_York</dd>
+    <dt>Re</dt><dd>Reusable diagnosis and safe recovery procedure for Windows UAC, Codex ACP startup, and restricted sandbox failures</dd>
+    <dt>Correspondence Number</dt><dd>045</dd>
+    <dt>Source / Work / Role Thread</dt><dd><code>019f705b-378e-7ce2-ac63-d42f0cadf6ba</code> / <code>T-2026-07-17-003</code> / ICVision Raven</dd>
+    <dt>Status</dt><dd>Approved, redacted, published-reference candidate</dd>
+    <dt>Record Type</dt><dd>Execution update, diagnosis, safety decision, and operator runbook</dd>
+  </dl>
+
+  <h2>Request Summary</h2>
+  <p>The PI requested a durable account of the permission investigation that began while testing <code>agentclientprotocol/codex-acp</code> as a possible way to reduce recurring task-launch and coordination friction. The desired outcome is a frequently reusable answer to three questions: what the proof of concept actually established, why an Administrator-group account can still report a non-administrator process, and which recovery actions are safe. The PI explicitly authorized public publication and top-of-site pinning.</p>
+  <p>Non-goals were disabling Windows security controls, inspecting credentials, calling a live model or API, moving protected data, modifying upstream Codex, claiming an ACP adapter defect without evidence, or representing process elevation as the platform fix for split writable roots.</p>
+
+  <h2>Execution Update</h2>
+  <ol>
+    <li>A bounded synthetic ACP proof of concept was selected: read-only agent mode, no project-file edits, no network/API operation, and no external data.</li>
+    <li>The required Node runtime launched successfully. The adapter then attempted its documented next step: spawning the bundled Codex App Server.</li>
+    <li>That child-process creation failed with Windows <code>spawn EPERM</code> inside the restricted tool sandbox. The failure occurred at a permission boundary after Node startup and before a usable end-to-end ACP session.</li>
+    <li>The investigation then separated Windows account membership from the token on the current process. Under UAC, an Administrator-group account normally starts ordinary applications with a filtered standard token. A separate elevated token is used only when a new process is launched with approval.</li>
+    <li>Restarting Windows did not make an already ordinary Codex launch elevated. A token is established when the process starts; it is not manually edited in place.</li>
+    <li>The safe operator action was therefore narrowed to temporary, explicit elevation of a new process only when the operation truly requires it.</li>
+  </ol>
+
+  <h2>Diagnosis and Recovery Procedure</h2>
+  <table>
+    <tr><th>Observation</th><th>Diagnosis</th><th>Correct next action</th></tr>
+    <tr><td>The account belongs to Administrators, but the process-level check is false.</td><td>Expected UAC filtered-token behavior for an ordinary launch.</td><td>Launch a new process with <code>Run as administrator</code> only for a task that needs elevation.</td></tr>
+    <tr><td><code>codex-acp</code> reaches Node, then child spawn returns <code>EPERM</code>.</td><td>The observed proof reached adapter startup but was blocked while spawning Codex App Server. This is not evidence that the adapter's protocol translation is defective.</td><td>Retry once from an appropriately authorized execution boundary while retaining ACP read-only mode and synthetic/no-network constraints; record the result.</td></tr>
+    <tr><td><code>apply_patch</code> refuses split writable roots before file access.</td><td>Codex task-launch/Windows sandbox-policy compiler defect.</td><td>Escalate to the launcher owner. Do not use UAC elevation, cwd changes, worktree moves, retries, or unrestricted fallback as the claimed fix.</td></tr>
+    <tr><td>A package install or protected system write is denied.</td><td>Possibly a genuine administrator-rights prerequisite.</td><td>Use the declared package manager and least-privilege installation first; elevate the specific new process only when administrator/system-wide installation is actually required.</td></tr>
+  </table>
+  <p>Supported temporary elevation example:</p>
+  <pre><code>Start-Process powershell.exe -Verb RunAs</code></pre>
+  <p>Verify the newly opened process, not the old one:</p>
+  <pre><code>$id = [Security.Principal.WindowsIdentity]::GetCurrent()
+$p = [Security.Principal.WindowsPrincipal]::new($id)
+$p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)</code></pre>
+  <p>For a desktop application, close all existing application processes and explicitly start a new instance with <em>Run as administrator</em>. End the elevated session after the bounded operation.</p>
+
+  <h2>Scope Limits</h2>
+  <p>The recorded proof did not complete ACP initialization, exercise protocol requests, modify a repository, invoke a provider, inspect credentials, or transfer data. No claim is made that temporary elevation completed the later ACP rerun because no exact completion evidence was available in the originating record at publication time. The test did not diagnose every possible source of Windows <code>EPERM</code>; it classified the exact observed boundary.</p>
+
+  <h2>Evidence</h2>
+  <ul>
+    <li><strong>Observed:</strong> Node launched; <code>codex-acp</code> then received <code>spawn EPERM</code> while starting its bundled Codex App Server inside the restricted tool sandbox.</li>
+    <li><strong>Observed:</strong> the process-level administrator test remained false after a reboot because Codex was not started as a newly elevated process.</li>
+    <li><strong>Authoritative Windows behavior:</strong> Microsoft documents that Administrator-group accounts receive standard and administrator tokens and that ordinary scripts use the filtered token until run elevated.</li>
+    <li><strong>Adapter contract:</strong> the <code>agentclientprotocol/codex-acp</code> README states that the stdio ACP server starts Codex App Server and supports a read-only initial mode.</li>
+    <li><strong>Prior diagnosis:</strong> ICVision correspondence 008 classifies the split-root refusal at the task-launch/sandbox-policy boundary; correspondence 009 defines the least-privilege platform remediation and acceptance tests.</li>
+  </ul>
+  <p>References: <a href="https://learn.microsoft.com/en-us/windows/win32/wmisdk/user-account-control-and-wmi">Microsoft: User Account Control and WMI</a>; <a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/start-process?view=powershell-5.1">Microsoft: Start-Process</a>; <a href="https://github.com/agentclientprotocol/codex-acp">agentclientprotocol/codex-acp</a>.</p>
+
+  <h2>Conflict Status</h2>
+  <p><strong>Flag:</strong> temporary admin access was initially expected to eliminate all Windows permission errors. <strong>Respond:</strong> separate filtered-token behavior, genuine administrator prerequisites, ACP child-spawn policy, and the known split-root launcher defect. <strong>Decide:</strong> permit bounded elevation for genuine admin-required operations, but never call elevation the sandbox root-cause fix. <strong>Document:</strong> this record and cross-linked correspondences 008 and 009.</p>
+
+  <h2>Execution Decision</h2>
+  <p><strong>Modify and accept.</strong> Use dependency-first recovery and temporary per-process elevation where justified. For ACP, retain the smallest synthetic read-only proof with a clear stop condition. For split writable roots, keep the platform issue open until ordinary sandboxed tools can operate in every declared root while denying outside-root access. Raven owns coordination; the PI retains authority for security-boundary changes and external operations.</p>
+
+  <h2>Verification</h2>
+  <p>Raven reconciled the observed startup boundary with Microsoft UAC documentation, the adapter's published startup contract, and prior ICVision root-cause records. Passed: factual separation of account membership, filtered/elevated process tokens, ACP startup boundary, and split-root platform scope. Not passed or not performed: end-to-end ACP session, live API use, credential authentication, provider response, or upstream launcher repair.</p>
+
+  <h2>Next Actions</h2>
+  <ol>
+    <li><strong>Operator:</strong> for a genuinely privileged task, start a new elevated process, verify its token, perform only the bounded operation, then close it.</li>
+    <li><strong>Raven:</strong> if ACP is retried, keep read-only mode, synthetic input, no external data, and stop after one repeated spawn failure; record exact command, version, exit, and boundary.</li>
+    <li><strong>Platform owner:</strong> repair and test complete multi-root policy enforcement without widening access or launching an unrestricted child.</li>
+    <li><strong>Archive owner:</strong> keep this record durably pinned as the top operational reference and preserve later corrections as addenda rather than silent rewrites.</li>
+  </ol>
+
+  <h2>Publication Boundary</h2>
+  <p class="notice">Public-safe and redacted. Excluded: usernames, local absolute paths, credentials, tokens, raw logs, provider output, protected project data, EEG data, and patient-level material. The commands shown are generic operator checks. This record does not authorize live API calls, credential inspection, security weakening, disabling UAC, changing <code>EnableLUA</code>, changing ownership of protected application directories, unrestricted-token fallback, or permanently running Codex as administrator.</p>
+
+  <section data-publication-addendum="true">
+    <h2>Publication Completeness Addendum</h2>
+    <h3>Desired Outcome and Approval</h3>
+    <p>A frequently reusable, top-pinned GitHub Pages reference was explicitly requested and approved by the PI.</p>
+    <h3>Assumptions and Alternatives</h3>
+    <p>The diagnosis assumes the recorded <code>EPERM</code> occurred at child spawn as observed. Alternatives such as adapter logic failure remain unevaluated because the child never started. Safe alternatives are a properly authorized bounded rerun or continued use of existing Codex task routing; neither changes the split-root platform requirement.</p>
+    <h3>Custody and Redaction</h3>
+    <p>The originating ICVision HTML is the canonical detailed record. The public archive copy omits machine identity, sensitive paths, credentials, raw output, and protected data.</p>
+    <h3>Known Gaps and Stop Conditions</h3>
+    <p>Stop after one repeated failure of the same spawn class, any request for credentials outside the approved auth flow, any attempted network/API action, any project-file mutation, or any pressure to weaken UAC or sandbox enforcement. A future successful rerun should be documented in a new addendum.</p>
+  </section>
+</body>
+</html>
