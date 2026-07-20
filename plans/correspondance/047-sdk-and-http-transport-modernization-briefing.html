@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>047 — ICVision SDK and HTTP transport modernization briefing</title>
+  <style>
+    :root { color-scheme: light; --ink: #17202a; --muted: #52606d; --line: #ccd6dd; --panel: #f5f8fa; --warning: #8b1e1e; --ok: #185c37; }
+    body { max-width: 960px; margin: 2rem auto; padding: 0 1.25rem 3rem; color: var(--ink); font: 16px/1.55 system-ui, sans-serif; }
+    h1, h2, h3 { line-height: 1.2; } h2 { margin-top: 2rem; border-bottom: 1px solid var(--line); padding-bottom: .3rem; }
+    dt { font-weight: 700; } dd { margin: 0 0 .75rem; } code { background: var(--panel); padding: .1rem .25rem; overflow-wrap: anywhere; }
+    .meta, .notice, table { border: 1px solid var(--line); background: var(--panel); padding: 1rem; } .notice { border-left: .35rem solid var(--warning); }
+    table { border-collapse: collapse; width: 100%; padding: 0; background: white; } th, td { border: 1px solid var(--line); padding: .6rem; text-align: left; vertical-align: top; } th { background: var(--panel); }
+    .muted { color: var(--muted); } li { margin: .35rem 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ICVision SDK and HTTP transport modernization briefing</h1>
+    <p class="muted">Correspondence 047 · Publication-authorized architecture discussion · 2026-07-20</p>
+  </header>
+
+  <section class="notice" aria-label="Scope warning">
+    <strong>Publication-ready architecture record.</strong> This record contains no EEG inputs or derivatives, provider responses, results, credentials, endpoint values, local paths, cost figures, or live-call instructions. It documents an explanatory discussion and an unresolved compatibility decision; it is not a production change or approval to transmit data.
+  </section>
+
+  <section class="meta" aria-label="Correspondence metadata">
+    <dl>
+      <dt>From</dt><dd>Raven — Engineering Delivery and Loop Coordinator</dd>
+      <dt>To</dt><dd>Human Owner / Principal Investigator</dd>
+      <dt>Date</dt><dd>2026-07-20</dd>
+      <dt>Re</dt><dd>How the current SDK request path differs from a project-owned HTTP transport</dd>
+      <dt>Correspondence Number</dt><dd>047</dd>
+      <dt>Source / Work / Role Thread</dt><dd>PI-facing ICVision coordination · <code>T-2026-07-17-003</code> · Raven</dd>
+      <dt>Status</dt><dd>Publication authorized; archive deployment verification pending. Implementation and compatibility decision remain pending PI direction.</dd>
+      <dt>Record Type</dt><dd>Modernization decision briefing</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Request Summary</h2>
+    <p>The PI requested a plain-language explanation of why some engineering teams replace provider SDKs with direct HTTP clients, what the current ICVision SDK path does, and what a small project-owned HTTP transport would need to take over.</p>
+    <p><strong>Desired outcome:</strong> support an informed future decision about ICVision’s provider boundary. <strong>Non-goals:</strong> no model selection, endpoint-policy decision, code change, credential handling, real API call, scientific claim, or release decision.</p>
+  </section>
+
+  <section>
+    <h2>Execution Update</h2>
+    <p>Current ICVision is an application pipeline around a provider SDK. It prepares a temporary component image, encodes that image as text-safe Base64, supplies the classification prompt and model settings, and calls the provider’s Responses-style API through the SDK. The SDK then owns low-level request construction, HTTPS communication, authentication-header handling, response-object conversion, and provider-specific error types. ICVision parses the returned classification text, validates it, and produces its usual result row.</p>
+    <p>A raw HTTP transport would remove only the SDK layer. ICVision would still prepare the image, choose the prompt and model, validate the classification, and preserve existing result semantics. The project would additionally own the exact request JSON, HTTPS destination, TLS behavior, headers, timeout, retry policy, response-size limit, response parsing, error redaction, and tests.</p>
+
+    <table>
+      <thead><tr><th>Concern</th><th>Current owner</th><th>Project-owned HTTP transport must do</th></tr></thead>
+      <tbody>
+        <tr><td>Request and authentication</td><td>SDK translates the method call into an authenticated HTTP request.</td><td>Build the JSON and authorization header without placing a credential in logs, command lines, or the request body.</td></tr>
+        <tr><td>Destination and encryption</td><td>SDK uses its default destination or configured compatibility endpoint and creates HTTPS traffic.</td><td>Choose only an approved HTTPS destination, verify certificates/hostnames, and reject unintended routing.</td></tr>
+        <tr><td>Data boundary</td><td>ICVision converts a component image to Base64 before calling the SDK.</td><td>Apply image/request/response-size limits and send explicit request-level storage controls.</td></tr>
+        <tr><td>Response and failures</td><td>SDK converts reply JSON into Python response/error objects.</td><td>Parse bounded JSON, recognize incomplete/error states, and return only sanitized project error categories.</td></tr>
+        <tr><td>Behavioral continuity</td><td>ICVision validates labels, confidence, and exclusion semantics after the SDK returns.</td><td>Feed the same application validator and prove result/failure compatibility through synthetic tests and private comparison only when separately authorized.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Why a thin HTTP transport can be useful</h2>
+    <ul>
+      <li>It makes the outbound contract visible and testable: destination, headers, JSON fields, storage request, bounds, and error handling are project code rather than implicit library behavior.</li>
+      <li>It can reduce dependency and upgrade churn when the pipeline uses a small, stable subset of one API.</li>
+      <li>It can support a documented provider-profile boundary rather than coupling ICVision internals to one SDK’s object model.</li>
+      <li>It can make synthetic testing more direct: a mock connection can prove that no network call occurs and that sensitive provider text never reaches retained logs.</li>
+    </ul>
+    <p>These benefits do not mean that an SDK is automatically unsafe or obsolete. OpenAI documents both its official SDKs and use of a developer’s own HTTP client. The tradeoff is control versus maintenance responsibility.</p>
+  </section>
+
+  <section>
+    <h2>Scope Limits</h2>
+    <p>This discussion did not inspect or disclose credentials, call a provider, transmit research data, assess classification quality, compare live outputs, approve an endpoint, approve cost, or change ICVision. A raw-transport candidate exists only as a separately reviewed, non-default building block; it is not the active pipeline and has not completed compatibility integration.</p>
+  </section>
+
+  <section>
+    <h2>Evidence</h2>
+    <ul>
+      <li>Read-only inspection of ICVision’s application flow found an SDK-created Responses request after image preparation and before application-level classification parsing.</li>
+      <li>A reviewed raw-transport candidate demonstrates bounded image/request/response handling, explicit <code>store: false</code>, certificate-verifying HTTPS, and sanitized failure text, but it is not integrated into the active workflow.</li>
+      <li>OpenAI’s current documentation presents official SDKs and a developer’s own preferred HTTP client as supported ways to make direct API requests: <a href="https://developers.openai.com/api/docs/libraries">SDKs and CLI</a>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Conflict Status</h2>
+    <p><strong>Flag:</strong> ICVision’s existing compatibility surface can accept a custom API base URL, while a fixed or profile-based raw client should not silently route a credential to an arbitrary host.</p>
+    <p><strong>Respond:</strong> preserve current behavior during a staged migration; do not treat a raw client as a drop-in replacement until its endpoint and credential policy is explicit.</p>
+    <p><strong>Decide:</strong> pending PI decision. The proposed direction is to preserve the current SDK compatibility lane initially and make any new raw transport opt-in with named, reviewed endpoint profiles.</p>
+    <p><strong>Document:</strong> this record captures the tradeoff; it does not choose the final policy.</p>
+  </section>
+
+  <section>
+    <h2>Execution Decision</h2>
+    <p><strong>Disposition: Advisory only; no architecture selection.</strong> The current SDK implementation is the existing compatibility reference and is not approval for live provider use. If the PI later authorizes a raw transport, it should be deliberately small and first prove request safety, output compatibility, and rollback behavior behind an opt-in seam. Removing the SDK or accepting arbitrary custom destinations in a raw client requires a later PI-approved compatibility decision.</p>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <p>Raven checked this publication draft for public-safety scope: it excludes raw or derived EEG material, credentials, provider outputs, response identifiers, endpoint values, local paths, cost/timing figures, and live-run commands. The cited official documentation was read through the OpenAI developer documentation source. No live provider request or code change was performed for this record.</p>
+  </section>
+
+  <section>
+    <h2>Next Actions</h2>
+    <ul>
+      <li><strong>Raven:</strong> obtain the PI’s endpoint/credential compatibility direction before authorizing transport integration.</li>
+      <li><strong>Echo:</strong> after that decision, implement one bounded opt-in integration increment only.</li>
+      <li><strong>Cipher, The Boulder, and Cricket:</strong> independently review security, code, and test evidence on the exact candidate revision before any private comparison is considered.</li>
+      <li><strong>Stop condition:</strong> do not proceed if endpoint routing, credential custody, data-transmission authority, safe failure behavior, or test evidence is unclear.</li>
+    </ul>
+  </section>
+
+  <section data-publication-addendum="true">
+    <h2>Publication Boundary</h2>
+    <h3>Public completeness</h3>
+    <p>This publication-ready record is complete for the architectural discussion: it defines the current and proposed responsibilities, tradeoffs, decision custody, and safe next step.</p>
+    <h3>Withheld protected material</h3>
+    <p>No private research inputs or derivatives, credential material, endpoint values, provider contents, identifiers, local storage locations, detailed runtime telemetry, or internal private baseline evidence is included or linked.</p>
+    <h3>Safety warning</h3>
+    <p>A description of a transport is not authorization to send research data. Any live request remains subject to separate approval, reviewed code, controlled credentials, and private custody rules.</p>
+  </section>
+</body>
+</html>
