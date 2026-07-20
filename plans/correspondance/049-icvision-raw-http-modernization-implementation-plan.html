@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>049 - ICVision raw HTTP modernization implementation plan</title>
+  <style>
+    :root { color-scheme: light; --ink: #17202a; --muted: #52606d; --line: #ccd6dd; --panel: #f5f8fa; --warning: #8b1e1e; --ok: #185c37; --accent: #164e63; }
+    body { max-width: 1040px; margin: 2rem auto; padding: 0 1.25rem 3rem; color: var(--ink); font: 16px/1.58 system-ui, sans-serif; }
+    h1, h2, h3 { line-height: 1.2; } h2 { margin-top: 2rem; border-bottom: 1px solid var(--line); padding-bottom: .3rem; }
+    h3 { margin-top: 1.4rem; } dt { font-weight: 700; } dd { margin: 0 0 .75rem; }
+    code { background: var(--panel); padding: .1rem .25rem; overflow-wrap: anywhere; }
+    .meta, .notice, .decision, table { border: 1px solid var(--line); background: var(--panel); padding: 1rem; }
+    .notice { border-left: .35rem solid var(--warning); } .decision { border-left: .35rem solid var(--accent); }
+    table { border-collapse: collapse; width: 100%; padding: 0; background: white; }
+    th, td { border: 1px solid var(--line); padding: .6rem; text-align: left; vertical-align: top; }
+    th { background: var(--panel); } .muted { color: var(--muted); } .ok { color: var(--ok); font-weight: 700; }
+    li { margin: .35rem 0; } pre { overflow-x: auto; background: #101820; color: #f5f7fa; padding: 1rem; border-radius: .25rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ICVision raw HTTP modernization implementation plan</h1>
+    <p class="muted">Correspondence 049 - Publication-authorized implementation plan - 2026-07-20</p>
+  </header>
+
+  <section class="notice" aria-label="Scope warning">
+    <strong>Public process and architecture record only.</strong> This plan does not authorize implementation or a live provider request. It contains no credentials, endpoint value, real subject identifier, EEG input or derivative, provider response, private baseline output, local storage path, or live-call command. Protected details remain in private custody.
+  </section>
+
+  <section class="meta" aria-label="Correspondence metadata">
+    <dl>
+      <dt>From</dt><dd>Raven - Engineering Delivery and Loop Coordinator</dd>
+      <dt>To</dt><dd>Human Owner / Principal Investigator and AmeenahsDevTeam engineering archive</dd>
+      <dt>Date</dt><dd>2026-07-20</dd>
+      <dt>Re</dt><dd>Staged implementation plan for replacing ICVision's OpenAI SDK request path with a project-owned raw HTTPS transport</dd>
+      <dt>Correspondence Number</dt><dd>049</dd>
+      <dt>Source Thread</dt><dd><code>019f705b-378e-7ce2-ac63-d42f0cadf6ba</code></dd>
+      <dt>Work ID</dt><dd><code>T-2026-07-17-003</code></dd>
+      <dt>Consulted Role Threads</dt><dd>Echo <code>019f6128-c4f4-7873-88b1-6784bd4462c0</code>; Cipher <code>019f612a-9064-7202-ba76-8410085413d6</code>; Cricket <code>019f612a-090e-7f40-8da5-e0e0d6b97da8</code>; The Boulder <code>019f612b-7e78-7360-bf26-7ac092729c91</code></dd>
+      <dt>Status</dt><dd>Plan complete; PI authorized publication. Implementation, live comparison, default switch, and SDK retirement remain separately gated.</dd>
+      <dt>Record Type</dt><dd>Implementation plan, security boundary, QA acceptance ladder, and conflict-resolution record</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Request Summary</h2>
+    <p>The PI requested a deliberately detailed implementation plan that decomposes the raw HTTP modernization into small, reversible steps and accounts for compatibility, security, failure behavior, edge cases, testing, comparison evidence, rollback, and eventual SDK retirement.</p>
+    <p><strong>Desired outcome:</strong> a buildable sequence that removes the SDK safely without losing the validated institutional endpoint path or corrupting ICVision results. <strong>Non-goals:</strong> no implementation, dependency removal, credential inspection, provider call, patient-data publication, scientific equivalence claim, merge, or release in this record.</p>
+    <p><strong>Constraints:</strong> one sole editor per increment; independent security, code, and QA checks; no automatic cross-transport fallback; no arbitrary credential destination in the raw lane; no all-subject validation; no path-hygiene or environment-setup side work unless it directly blocks an approved increment.</p>
+  </section>
+
+  <section>
+    <h2>Execution Update</h2>
+    <p>Raven routed read-only planning scopes through four verified ICVision standing role threads. Echo mapped the production call graph and retirement surface. Cipher supplied the trust-boundary gates. Cricket supplied the acceptance and boundary matrix. The Boulder reviewed the reconciled ladder for hidden mega-bets, missing joins, rollback weakness, and compatibility drift.</p>
+    <p>No agent edited code, ran tests, inspected a credential, accessed EEG inputs, called a provider, committed, pushed, or published during those consultations.</p>
+  </section>
+
+  <section>
+    <h2>Scope Limits</h2>
+    <p>This record did not implement or modify the pipeline, install or remove dependencies, run tests, inspect credentials, access research inputs, call a provider, verify scientific behavior, approve retries or concurrency, change the default transport, retire compatibility behavior, merge code, or release software. The live institutional route, protected inputs and outputs, and local evidence locations were deliberately not inspected or published for this record.</p>
+  </section>
+
+  <section class="decision">
+    <h2>Recommended Architecture</h2>
+    <p>Use a temporary hybrid migration. Preserve the SDK as the existing compatibility and rollback lane while raw HTTP is introduced as an explicit opt-in lane. Raw HTTP may use only named, reviewed endpoint profiles. It must never accept or silently translate an arbitrary <code>base_url</code>, inherit ambient endpoint or proxy routing, follow a redirect, or automatically fall back to the SDK.</p>
+    <p>An approved profile owns the exact HTTPS host, port, Responses path, TLS policy, credential source, allowed request settings, and resource limits. The institutional route is represented as an explicit profile, not an ambient HTTP proxy. The SDK rollback lane remains available until raw HTTP has passed private comparison, independent review, and an explicit default-switch decision.</p>
+    <p><strong>Required PI decision before implementation:</strong> approve or modify this temporary hybrid/profile-based endpoint and credential policy. Later decisions about retries, raw becoming the default, and SDK removal remain separate.</p>
+  </section>
+
+  <section>
+    <h2>Goal and Invariants</h2>
+    <p><strong>Goal:</strong> replace the SDK request boundary with a small project-owned HTTPS implementation while preserving classification behavior, endpoint compatibility, result structure, privacy, and comparison evidence.</p>
+    <ul>
+      <li>Every Responses request explicitly contains <code>store: false</code>.</li>
+      <li>Raw HTTP cannot send a credential to a caller-selected destination.</li>
+      <li>No redirect or ambient proxy can change the destination.</li>
+      <li>Credentials, prompts, images, Base64, provider bodies, private paths, and protected reasons stay out of logs, Git, and public records.</li>
+      <li>A transport or parser failure produces confidence <code>0.0</code>, <code>exclude_vision=False</code>, and no data mutation.</li>
+      <li>The first raw live proof is one representative component, one request, one connection, concurrency one, and no automatic retry or fallback.</li>
+      <li>Software smoke evidence is not scientific-equivalence evidence.</li>
+      <li>Implementation quality is measured through behavior and evidence rather than worktree or directory tidiness.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Highest-Learning Question</h2>
+    <p>Can the raw transport reproduce the SDK lane's application-facing behavior with the same protected derived image, prompt, model, endpoint profile, and parser while proving that the request goes only to the reviewed endpoint, is not retried, cannot auto-exclude on failure, and leaks no protected material?</p>
+  </section>
+
+  <section>
+    <h2>Implementation Ladder</h2>
+
+    <h3>Gate 0 - Compatibility and credential policy</h3>
+    <ol>
+      <li>Authorize the SDK lane to retain legacy custom-endpoint compatibility temporarily.</li>
+      <li>Authorize immutable named profiles for the raw lane.</li>
+      <li>Bind each raw profile to a reviewed credential source after profile validation.</li>
+      <li>Keep the public command-line key compatibility question under PI custody; prefer environment-only credentials for governed raw live use.</li>
+      <li>Make raw plus <code>base_url</code> fail before data loading, plotting, or connection creation.</li>
+      <li>Ignore ambient endpoint and proxy variables in the raw lane.</li>
+      <li>Require a separate review if a private certificate authority is ever needed; never disable certificate verification.</li>
+    </ol>
+
+    <h3>Increment 1 - Freeze the offline wire and compatibility contract</h3>
+    <ol>
+      <li>Use only a synthetic prompt and synthetic image fixture.</li>
+      <li>Capture the SDK's serialized request through a fake HTTP transport with no socket.</li>
+      <li>Compare model, prompt, image data URL, input ordering, temperature, reasoning, image detail, output bound, and storage setting.</li>
+      <li>Resolve the current two-message input shape versus the candidate's combined content array.</li>
+      <li>Label intentional safety changes explicitly: <code>store:false</code>, bounded bodies, bounded output, sanitized failures, and no retry.</li>
+      <li>Define the minimal internal transport result: output text, normalized usage if available, and a stable sanitized outcome category.</li>
+      <li>Freeze the immutable endpoint-profile structure and reject unknown or URL-shaped profile values before credential resolution.</li>
+    </ol>
+    <p><strong>Acceptance:</strong> no real socket; SDK and raw fixtures differ only for approved safety deltas; marker secrets and protected content never appear in snapshots, logs, exceptions, or artifacts.</p>
+
+    <h3>Increment 2 - Harden the inert raw transport</h3>
+    <ol>
+      <li>Use candidate commit <code>be78c8f</code> only as seed code.</li>
+      <li>Resolve the fixed profile before reading credentials.</li>
+      <li>Expose no caller-supplied host, path, port, proxy, SSL context, opener, redirect destination, or arbitrary headers.</li>
+      <li>Construct a closed header set: authorization, JSON content and acceptance, identity encoding, and an optional fixed user agent.</li>
+      <li>Reject CR, LF, NUL, TAB, DEL, and other ASCII controls in header-bound values.</li>
+      <li>Use the platform trust store, hostname verification, certificate-required TLS, and the exact profile hostname for SNI.</li>
+      <li>Reject every redirect without following <code>Location</code>.</li>
+      <li>Use the existing Pillow dependency to verify decoded image format, extension/MIME agreement, dimensions, pixel count, truncation, and corruption.</li>
+      <li>Read one opened file descriptor with a limit-plus-one strategy.</li>
+      <li>Bound image bytes, prompt contribution, request bytes, response bytes, dimensions, pixels, output tokens, socket timeout, and overall deadline.</li>
+      <li>Require compact UTF-8 JSON containing <code>store:false</code>.</li>
+      <li>Use one fresh connection and close it in <code>finally</code>.</li>
+      <li>Require the expected success status, JSON media type, and identity content encoding.</li>
+      <li>Reject oversized declared bodies before reading and bound chunked or unknown-length bodies during reading.</li>
+      <li>Never retain a non-success provider body; return only stable error categories.</li>
+      <li>Perform no retry.</li>
+    </ol>
+    <p><strong>Acceptance:</strong> below/at/above limit tests; valid and invalid image formats; hostile routing variables; TLS, redirect, HTTP-status, encoding, malformed-response, redaction, and connection-cleanup tests; no production import yet.</p>
+
+    <h3>Increment 3 - Strict parser and safe-result adapter</h3>
+    <ol>
+      <li>Separate HTTP mechanics from classification parsing.</li>
+      <li>Allow reasoning items before the message but require exactly one message and one nonempty output-text value for the initial contract.</li>
+      <li>Reject incomplete, failed, cancelled, missing, or unknown Responses states.</li>
+      <li>Reject malformed or ambiguous JSON, duplicate keys, missing or unknown labels, wrong types, Boolean confidence, NaN, infinity, out-of-range confidence, unexpected fields, and oversized or control-bearing reasons.</li>
+      <li>Represent operational failure separately from a legitimate artifact classification.</li>
+      <li>Project failures to the established output boundary with confidence <code>0.0</code>, a stable redacted reason, and <code>exclude_vision=False</code>.</li>
+      <li>Keep provider explanations protected and bounded if retained locally; never log or publicly publish them.</li>
+      <li>Track attempts, successful parsed responses, and usage-bearing responses separately.</li>
+      <li>Leave missing usage unavailable and unknown-model cost unknown; remove silent fallback pricing.</li>
+    </ol>
+    <p><strong>Acceptance:</strong> frozen response-state and classification fixtures; unchanged public return signatures and DataFrame structure; no ICA exclusion or data mutation after any injected failure.</p>
+
+    <h3>Increment 4 - Opt-in single-layout integration</h3>
+    <ol>
+      <li>Add a narrow explicit transport selector and named endpoint-profile selection through CLI, core, compatibility, and API layers.</li>
+      <li>Validate every transport/profile/base-URL combination before reading research data or generating plots.</li>
+      <li>Keep SDK behavior isolated in the SDK lane and raw behavior isolated in the raw lane.</li>
+      <li>Never auto-fallback between lanes.</li>
+      <li>Route only single layout through raw HTTP; raw plus strip fails during preflight.</li>
+      <li>Preserve prompt selection, label mapping, confidence behavior, result order, and DataFrame structure.</li>
+      <li>Do not silently change model defaults, reasoning defaults, strip defaults, structured-output behavior, or prompts during transport migration.</li>
+      <li>Pin the first raw execution contract to one component, one attempt, one active connection, no auto-exclusion, and no report.</li>
+      <li>Add a fully synthetic end-to-end test from application entry point through the fake raw connection and result DataFrame.</li>
+      <li>Record the selected lane and logical profile in a sanitized private manifest.</li>
+    </ol>
+    <p><strong>Acceptance:</strong> focused transport/integration tests, affected API and CLI regressions, full suite, diff check, and proof that neither lane calls the other.</p>
+
+    <h3>Increment 5 - Private paired one-component comparison</h3>
+    <ol>
+      <li>Obtain separate PI authorization for one live raw request.</li>
+      <li>Use only the PI-approved representative component and keep every input and derivative private.</li>
+      <li>Use the exact retained derived image for both lanes when available; otherwise generate once and use the same verified image for both.</li>
+      <li>Hold image hash, prompt hash, model, image detail, endpoint profile, output bound, parser, and exclusion/report settings constant.</li>
+      <li>Verify the exact profile destination, hostname/certificate checks, no redirect, no ambient proxy, and no header substitution.</li>
+      <li>Enforce one request with no transport retry, redirect retry, application retry, or cross-transport fallback.</li>
+      <li>Store a private sanitized manifest with code revision, logical lane/profile, protected hashes, settings, <code>store:false</code>, attempt count, elapsed time, status, normalized classification, exclusion flag, and usage availability.</li>
+      <li>Never retain credentials, authorization headers, Base64, full request bodies, raw provider bodies, environment dumps, or sensitive paths in publishable material.</li>
+      <li>Compare structural and operational behavior, not exact label equality or scientific accuracy.</li>
+    </ol>
+    <p><strong>Acceptance:</strong> valid label taxonomy, finite confidence, stable schema, safe failure semantics, truthful usage/cost representation, verified routing, and no protected-material leak.</p>
+
+    <h3>Increment 6 - Strip, batching, retry policy, and concurrency</h3>
+    <ol>
+      <li>Migrate strip transport and strip parser independently from the proven single path.</li>
+      <li>Preserve component-letter mapping, partial final strips, one result row per expected component, and deterministic ordering.</li>
+      <li>Remove raw provider-response logging.</li>
+      <li>Define safe failures for missing, duplicated, or mismatched component IDs.</li>
+      <li>Start with one attempt and concurrency one.</li>
+      <li>Use synthetic barriers to prove active requests never exceed the configured concurrency and components are neither lost nor duplicated.</li>
+      <li>Verify temporary-image cleanup after plotting, worker, HTTP, parser, timeout, and cancellation failures.</li>
+      <li>Do not inherit the existing broad three-attempt retry policy automatically.</li>
+      <li>Require a later PI decision before any retry, including eligible statuses, ambiguous POST handling, duplicate cost, maximum attempts, backoff, jitter, cancellation, and final-attempt behavior.</li>
+    </ol>
+
+    <h3>Increment 7 - Raw HTTP becomes the default</h3>
+    <ol>
+      <li>Require successful single and strip regression evidence and the private paired comparison.</li>
+      <li>Require Cipher, The Boulder, and Cricket to review or test the exact implementation revision.</li>
+      <li>Require both SDK and raw lanes to remain runnable through offline contract tests.</li>
+      <li>Require an explicit, auditable selector that is never chosen after an error.</li>
+      <li>Document operator rollback and record the selected lane in private manifests.</li>
+      <li>Obtain explicit PI authorization for the default switch.</li>
+      <li>Retain the SDK rollback lane for one tagged release and at least 30 days, with Raven as retirement owner.</li>
+    </ol>
+
+    <h3>Increment 8 - Retire the SDK</h3>
+    <ol>
+      <li>Obtain the final PI decision on arbitrary custom-endpoint compatibility.</li>
+      <li>Remove SDK request construction and SDK-specific exception handling.</li>
+      <li>Remove the direct OpenAI package declaration from project, tox, and lockfile surfaces; regenerate rather than hand-edit the lockfile.</li>
+      <li>Confirm whether the package remains transitively installed before claiming complete removal.</li>
+      <li>Reconcile active scripts and operator guides while preserving historical correspondence.</li>
+      <li>Build and install from the lockfile, run the complete suite, and search for active SDK imports/calls.</li>
+      <li>Preserve Git history and the protected baseline bundle as migration readback evidence.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Edge-Case and Acceptance Matrix</h2>
+    <table>
+      <thead><tr><th>Boundary</th><th>Required cases</th></tr></thead>
+      <tbody>
+        <tr><td>Endpoint</td><td>Unknown or URL-shaped profile; raw plus custom base URL; ambient endpoint/proxy variables; redirect; host or path substitution.</td></tr>
+        <tr><td>Credential</td><td>Missing, empty, whitespace, every control character, wrong profile source, and marker searches across logs, exceptions, representations, results, and artifacts.</td></tr>
+        <tr><td>TLS</td><td>Hostname verification, certificate-required mode, exact SNI host, handshake/certificate failures, and no verification-disable surface.</td></tr>
+        <tr><td>Image</td><td>Valid supported formats; empty, malformed, truncated, mismatched, oversized, high-pixel-count, directory, and unreadable inputs.</td></tr>
+        <tr><td>Request</td><td>Empty/large prompt, Unicode, JSON escaping, invalid model/effort/detail, exact size boundaries, and missing or mutated <code>store:false</code>.</td></tr>
+        <tr><td>HTTP</td><td>Expected success, no-content, every redirect class, representative client/rate-limit/server failures, oversized declared body, chunked body, and unexpected compression.</td></tr>
+        <tr><td>Response</td><td>Invalid UTF-8, malformed or duplicate-key JSON, wrong top-level type, every Responses status, and empty/multiple output text.</td></tr>
+        <tr><td>Classification</td><td>Missing/unknown label, Boolean/NaN/infinite/out-of-range confidence, extra fields, and oversized/control-bearing reason.</td></tr>
+        <tr><td>Accounting</td><td>Usage present/missing/malformed, unknown model, profile-specific pricing unavailable, and attempts versus successful/usage-bearing responses.</td></tr>
+        <tr><td>Execution</td><td>Exactly one initial attempt, no redirect or application retry, no cross-transport fallback, bounded concurrency, connection closure, and cancellation.</td></tr>
+        <tr><td>Pipeline</td><td>Stable DataFrame/API contract, deterministic rows, cleanup, and no exclusion or data mutation after operational failure.</td></tr>
+        <tr><td>Custody</td><td>No credential, image, Base64, prompt, provider body, private path, subject identifier, or protected reason in Git, logs, or public output.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Authority Migration and Rollback</h2>
+    <table>
+      <thead><tr><th>Concern</th><th>Before</th><th>After</th><th>Retirement gate</th></tr></thead>
+      <tbody>
+        <tr><td>Wire serialization and endpoint</td><td>OpenAI SDK plus legacy custom-base-URL surface</td><td>Named profile plus project-owned raw HTTPS transport</td><td>Private proof, exact-revision reviews, PI default decision</td></tr>
+        <tr><td>Classification semantics</td><td>ICVision application parser</td><td>ICVision strict application parser</td><td>Stable fixtures and DataFrame/API regression evidence</td></tr>
+        <tr><td>Rollback</td><td>Not applicable</td><td>Explicit SDK selector, never error-triggered</td><td>One tagged release plus at least 30 days and PI retirement decision</td></tr>
+        <tr><td>History/readback</td><td>Git and protected safety baseline</td><td>Git, protected SDK/raw comparison bundle, sanitized manifest</td><td>Preserved after SDK dependency removal</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Conflict Status</h2>
+    <p><strong>Flag 1:</strong> Echo proposed strip-first integration because the strip helper already consumes text; Cricket proposed single-first because the established representative baseline is single-component.</p>
+    <p><strong>Respond:</strong> strip-first has a smaller helper seam, but it immediately combines transport migration with strip parsing, broad retries, component mapping, and raw-response logging.</p>
+    <p><strong>Decide:</strong> Raven selected single-first for the plan because it maximizes comparison value and isolates fewer behaviors. Strip remains a later increment.</p>
+    <p><strong>Flag 2:</strong> Echo proposed commit-only rollback and no runtime selector; the comparison and cutover plan require both lanes to be explicitly runnable.</p>
+    <p><strong>Decide:</strong> use a narrow temporary selector with no automatic fallback and a concrete retirement window.</p>
+    <p><strong>Flag 3:</strong> Cipher recommended environment-only raw credentials, while existing public direct-key compatibility is still part of the product surface.</p>
+    <p><strong>Decide:</strong> raw-live custody should be environment-bound; the public compatibility disposition remains with the PI.</p>
+    <p><strong>Document:</strong> The Boulder approved the staged direction after requiring explicit profile-bound proxy/TLS rules, a closed header allowlist, an operable rollback-selector contract, and frozen parser/result fixtures. Those four requirements are included above.</p>
+  </section>
+
+  <section>
+    <h2>Execution Decision</h2>
+    <p><strong>Disposition: Modify and stage.</strong> Accept the profile-based raw transport direction, but do not treat candidate <code>be78c8f</code> as merge-ready and do not remove the SDK in the first implementation. The recommended first implementation lock, after the PI compatibility decision, is the offline wire and compatibility contract. It provides the highest-learning evidence without touching credentials, research data, or a provider.</p>
+    <p><strong>Sole editor:</strong> Echo, one bounded increment at a time. <strong>Checkers:</strong> Cipher for security, The Boulder for code/diff review, Cricket for no-network QA on the exact revision. <strong>Coordinator:</strong> Raven. <strong>Remaining PI gates:</strong> hybrid/profile authorization, live comparison, retry/concurrency expansion, raw default, SDK retirement, and release/publication of later results.</p>
+  </section>
+
+  <section>
+    <h2>Evidence</h2>
+    <ul>
+      <li>Read-only repository inspection covered the active SDK call sites, endpoint propagation, retry and fallback behavior, result parsing, cost handling, package declarations, and candidate commit <code>be78c8f</code>.</li>
+      <li>Echo, Cipher, Cricket, and The Boulder returned bounded planning or review packets through their verified ICVision standing-role threads.</li>
+      <li>The publication source passed standalone HTML parsing and a focused scan for protected identifiers, credential patterns, endpoint values, and machine-local paths before archive integration.</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Verification</h2>
+    <p>Raven verified the plan against read-only repository inspection and the actual responses from Echo, Cipher, Cricket, and The Boulder. Current evidence shows two active SDK request paths, public custom-endpoint propagation, broad strip retries, unsafe high-confidence failure behavior, and an unintegrated raw-transport candidate. No tests were run for this planning record.</p>
+    <ul>
+      <li>Candidate evidence: <code>be78c8f</code> adds the standalone raw transport and focused tests but no application integration.</li>
+      <li>Current-state evidence: application, core, compatibility, CLI, pricing, retry, and packaging surfaces were inspected read-only.</li>
+      <li>OpenAI documents Base64 data URLs as supported image input and documents that Responses are stored by default unless <code>store:false</code> is set: <a href="https://developers.openai.com/api/docs/guides/images-vision">Images and vision</a>; <a href="https://developers.openai.com/api/docs/guides/migrate-to-responses#4-decide-when-to-use-statefulness">statefulness guidance</a>; <a href="https://developers.openai.com/api/docs/guides/your-data#v1responses">data controls</a>.</li>
+      <li><span class="ok">Plan review outcome:</span> The Boulder approved after the four major joins were made explicit.</li>
+    </ul>
+    <p><strong>Known gap:</strong> a plan review cannot prove live endpoint behavior, institutional retention policy, classification quality, or implementation correctness. Those remain later, separately authorized evidence gates.</p>
+  </section>
+
+  <section>
+    <h2>Next Actions</h2>
+    <ol>
+      <li><strong>PI:</strong> approve or modify the temporary hybrid and named-profile compatibility policy.</li>
+      <li><strong>Raven:</strong> after approval, route Increment 1 only to Echo as sole editor and record the exact branch/revision and stop conditions.</li>
+      <li><strong>Echo:</strong> produce the offline SDK-versus-raw contract with no live socket or runtime behavior change.</li>
+      <li><strong>Cipher, The Boulder, Cricket:</strong> review the same exact revision before Raven advances the ladder.</li>
+      <li><strong>Stop condition:</strong> stop on endpoint ambiguity, credential-routing uncertainty, unexpected network activity, missing <code>store:false</code>, raw content leakage, automatic retry/fallback, unsafe exclusion, schema drift, or unrelated dependency churn.</li>
+      <li><strong>Expected next artifact:</strong> an offline contract evidence record, not a live-results publication.</li>
+    </ol>
+  </section>
+
+  <section data-publication-addendum="true">
+    <h2>Publication Boundary</h2>
+    <h3>Public completeness</h3>
+    <p>This public record is complete for the implementation plan: architecture, staged increments, edge cases, acceptance gates, authority migration, rollback, team routing, conflict resolution, and remaining PI decisions are included.</p>
+    <h3>Synthetic versus real evidence</h3>
+    <p>All described implementation and QA fixtures are synthetic until a later, separately authorized private comparison. No real research input, derivative, or provider output is attached.</p>
+    <h3>Withheld protected material</h3>
+    <p>The real subject identifier, local baseline-bundle path, endpoint value, credentials, environment values, prompts, EEG inputs and derivatives, generated result files, provider output and reasons, response identifiers/headers, usage/cost telemetry, private runtime commands, and private logs are withheld.</p>
+    <h3>Completeness limitation</h3>
+    <p>Redaction does not alter the implementation sequence or acceptance logic. It removes only operational values and protected research material that are unnecessary for public understanding.</p>
+    <h3>Safety warning</h3>
+    <p>This publication is not authority to implement, transmit data, inspect credentials, broaden concurrency, enable retries, change the default transport, remove compatibility behavior, or retire the SDK. Each action retains its stated gate.</p>
+  </section>
+</body>
+</html>
