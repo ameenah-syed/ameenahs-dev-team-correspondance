@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>048 — Windows split-root sandbox root cause and solution</title>
+  <style>
+    :root{color-scheme:light;--ink:#17202a;--muted:#52606d;--line:#ccd6dd;--panel:#f5f8fa;--warning:#8b1e1e}body{max-width:960px;margin:2rem auto;padding:0 1.25rem 3rem;color:var(--ink);font:16px/1.55 system-ui,sans-serif}h1,h2,h3{line-height:1.2}h2{margin-top:2rem;border-bottom:1px solid var(--line);padding-bottom:.3rem}dt{font-weight:700}dd{margin:0 0 .75rem}code{background:var(--panel);padding:.1rem .25rem}.meta,.notice,table{border:1px solid var(--line);background:var(--panel);padding:1rem}.notice{border-left:.35rem solid var(--warning)}table{border-collapse:collapse;width:100%;padding:0;background:white}th,td{border:1px solid var(--line);padding:.6rem;text-align:left;vertical-align:top}th{background:var(--panel)}.muted{color:var(--muted)}li{margin:.35rem 0}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Windows split-root sandbox failures are a policy-enforcement defect</h1>
+    <p class="muted">Correspondence 048 · Published engineering investigation · 2026-07-20</p>
+  </header>
+
+  <section class="notice" aria-label="Scope warning">
+    <strong>Current finding, not a release announcement.</strong> The public Codex issues remained open when reviewed. A merged deletion-rights repair is useful but explicitly does not complete split-root enforcement.
+  </section>
+
+  <section class="meta" aria-label="Correspondence metadata">
+    <dl>
+      <dt>From</dt><dd>Raven — Engineering Delivery and Loop Coordinator</dd>
+      <dt>To</dt><dd>Human Owner / Principal Investigator and Windows Codex operators</dd>
+      <dt>Date</dt><dd>2026-07-20</dd>
+      <dt>Re</dt><dd>Root cause and correct solution for Windows split writable-root and <code>apply_patch</code> failures</dd>
+      <dt>Correspondence Number</dt><dd>048</dd>
+      <dt>Source / Work / Role Thread</dt><dd>PI-facing Raven coordination · <code>T-2026-07-20-001</code> · Echo, Ledger, The Boulder, and Cricket standing-role reviews</dd>
+      <dt>Status</dt><dd>Published engineering finding; complete upstream product fix not verified</dd>
+      <dt>Record Type</dt><dd>Root-cause investigation and acceptance contract</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Request Summary</h2>
+    <p>The PI requested an evidence-backed review of OpenAI Codex issues <a href="https://github.com/openai/codex/issues/10601">#10601</a> and <a href="https://github.com/openai/codex/issues/30009">#30009</a>, their linked records, and current source to identify why native Windows sandbox preparation blocks <code>apply_patch</code>.</p>
+    <p><strong>Desired outcome:</strong> distinguish the confirmed defect from adjacent failures, workarounds, and unsafe privilege broadening. <strong>Non-goals:</strong> no released-fix claim, local Codex modification, or recommendation to disable sandbox controls.</p>
+  </section>
+
+  <section>
+    <h2>Execution Update</h2>
+    <p>The split-root error occurs before patch parsing or target mutation. Codex Desktop supplies a managed filesystem profile containing several writable roots, commonly the workspace and temporary/runtime locations. The Windows unelevated restricted-token path compares those requested roots with its older compatibility workspace-write projection. When the sets differ, it refuses to run because the backend does not currently forward and enforce the complete split-root policy.</p>
+    <p>The refusal safely prevents silent unrestricted execution, but makes a valid managed profile unusable. Reports where Add succeeds while Update or Delete fails show execution-path asymmetry: existing-file operations enter the sandbox preparation/read path that performs the unsupported-policy check.</p>
+    <p>Issue #10601 is a related but broader setup-refresh family with competing explanations involving mutex concurrency, ACL inspection, SID handling, file locks, and refresh coverage. It is not proof that every Windows sandbox failure has one cause.</p>
+  </section>
+
+  <section>
+    <h2>Scope Limits</h2>
+    <p>The investigation used public OpenAI issues, pull requests, source, architecture material, and actual bounded responses from four assigned standing-role reviewers. It did not inspect proprietary Desktop host code, establish contributor proposals as maintainer determinations, or verify a released binary containing a complete correction.</p>
+  </section>
+
+  <section>
+    <h2>Evidence</h2>
+    <ul>
+      <li><a href="https://github.com/openai/codex/issues/30009">Issue #30009</a> records the exact pre-execution split writable-root refusal.</li>
+      <li><a href="https://github.com/openai/codex/issues/30712">Issue #30712</a> independently demonstrates workspace-plus-temp roots producing the same failure before an existing file is patched.</li>
+      <li>Current <a href="https://github.com/openai/codex/blob/main/codex-rs/sandboxing/src/windows.rs">Windows policy-resolution source</a> contains the exact comparison and refusal.</li>
+      <li><a href="https://github.com/openai/codex/pull/10648">PR #10648</a> combined SID, mutex, setup, keyring, and unrelated changes; it closed without merge.</li>
+      <li>Merged <a href="https://github.com/openai/codex/pull/31138">PR #31138</a> repairs deletion rights within writable roots but expressly excludes split-root setup, elevated-helper, and proxy failures.</li>
+      <li>OpenAI's <a href="https://openai.com/index/building-codex-windows-sandbox/">Windows sandbox engineering description</a> explains the restricted-SID and ACL model a complete fix must preserve.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Conflict Status</h2>
+    <p><strong>Flag:</strong> several plausible causes and successful elevated runs can be mistaken for proof of one repair.</p>
+    <p><strong>Respond:</strong> separate #10601's setup-refresh family from #30009/#30712's exact split-policy refusal; classify elevation, PowerShell rewrites, <code>git apply</code>, and root removal only as workarounds.</p>
+    <p><strong>Decide:</strong> accept the source-confirmed root-set comparison as the direct cause of the named error while retaining adjacent helper failures as separate unresolved classes.</p>
+    <p><strong>Document:</strong> this record states the implementation contract without claiming a released fix.</p>
+  </section>
+
+  <section>
+    <h2>Execution Decision</h2>
+    <p><strong>Disposition: require a launcher-level multi-root correction.</strong> The unelevated backend must canonicalize and deduplicate every effective Windows root, pass the complete write-root override through the launcher, apply path-scoped capability and ACL grants to every declared root, preserve protected/read-only carve-outs, validate all grants before child creation, and roll back partial setup failures. It must never widen access to a common ancestor, retain only the first root, or fall through unsandboxed.</p>
+    <p>A temporary single-root profile is only a reduced-capability workaround. Excluding temporary roots can break compilers, tests, installers, and other tools. Elevation may enter another backend but does not repair the unelevated policy model.</p>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <table>
+      <thead><tr><th>Area</th><th>Required acceptance result</th></tr></thead>
+      <tbody>
+        <tr><td>Allowed roots</td><td>Shell and <code>apply_patch</code> create, update, replace, and delete in the workspace, TEMP, and a disjoint additional root.</td></tr>
+        <tr><td>Denied locations</td><td>Both paths deny changes outside declared roots and within protected/read-only descendants, with no partial mutation.</td></tr>
+        <tr><td>Path forms</td><td>Cross-drive roots, spaces, Unicode, UNC, aliases, case differences, and reparse points are handled without widening access.</td></tr>
+        <tr><td>Atomic setup</td><td>An invalid root prevents child launch and rolls back every partial ACL change.</td></tr>
+        <tr><td>Parity and progress</td><td>Shell and patch authorization outcomes match; no wrapper-only failure, silent <code>{}</code>, or hang is accepted.</td></tr>
+      </tbody>
+    </table>
+    <p>Echo traced the execution boundary; Ledger reconciled chronology; The Boulder rejected unsafe privilege-broadening interpretations; Cricket produced the acceptance matrix. Raven read every actual response and reconciled it with upstream source and PR status.</p>
+  </section>
+
+  <section>
+    <h2>Next Actions</h2>
+    <ul>
+      <li><strong>OpenAI Windows sandbox owner:</strong> implement and test complete unelevated multi-root policy forwarding and enforcement.</li>
+      <li><strong>Windows operators:</strong> keep workarounds labeled and verify their reduced capability set in a new task.</li>
+      <li><strong>Raven:</strong> publish a later correction or superseding record only when a merged fix and released build pass the matrix.</li>
+      <li><strong>Stop condition:</strong> do not call the defect fixed based only on elevation, unrestricted execution, a successful Add operation, or PR #31138.</li>
+    </ul>
+  </section>
+
+  <section data-publication-addendum="true">
+    <h2>Publication Boundary</h2>
+    <h3>Public completeness</h3>
+    <p>This record contains the root-cause finding, evidence classification, solution contract, workaround boundary, review custody, and verification matrix needed to understand the decision independently.</p>
+    <h3>Withheld protected material</h3>
+    <p>No credentials, private repository content, provider output, participant or patient data, machine-local user paths, raw private logs, or unpublished product material is included.</p>
+    <h3>Safety warning</h3>
+    <p>Do not disable UAC or sandbox controls, change system-wide security policy, take ownership of protected application directories, grant broad filesystem access, or make permanent elevation the default.</p>
+  </section>
+</body>
+</html>
