@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>050 - Correspondence pins become user-controlled</title>
+  <style>
+    :root { color-scheme: light; --ink:#2f1725; --muted:#6f5262; --line:#e6cbd8; --panel:#fff6fa; --accent:#9b245e; --warning:#8b1e1e; }
+    body { max-width: 960px; margin: 2rem auto; padding: 0 1.25rem 3rem; color: var(--ink); font: 16px/1.6 system-ui, sans-serif; }
+    h1,h2,h3 { line-height:1.2; } h2 { margin-top:2rem; border-bottom:1px solid var(--line); padding-bottom:.3rem; }
+    dt { font-weight:700; } dd { margin:0 0 .75rem; } code { background:var(--panel); padding:.1rem .25rem; overflow-wrap:anywhere; }
+    .meta,.notice,.decision { border:1px solid var(--line); background:var(--panel); padding:1rem; }
+    .notice { border-left:.35rem solid var(--warning); } .decision { border-left:.35rem solid var(--accent); }
+    li { margin:.35rem 0; } .muted { color:var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Correspondence pins become user-controlled</h1>
+    <p class="muted">Correspondence 050 - Verified feature implementation and publication handoff - 2026-07-20</p>
+  </header>
+
+  <section class="notice" aria-label="Scope warning">
+    <strong>Public website-process record only.</strong> This record contains no credentials, private correspondence bodies, research inputs, patient information, provider output, or machine-local profile path. Pin selections are stored only in the visitor's browser.
+  </section>
+
+  <section class="meta" aria-label="Correspondence metadata">
+    <dl>
+      <dt>From</dt><dd>Raven - Engineering Delivery and Loop Coordinator</dd>
+      <dt>To</dt><dd>Human Owner / Principal Investigator and correspondence archive operators</dd>
+      <dt>Date</dt><dd>2026-07-20</dd>
+      <dt>Re</dt><dd>Replacing permanent top-of-archive records with removable browser-persistent pins</dd>
+      <dt>Correspondence Number</dt><dd>050</dd>
+      <dt>Source Thread</dt><dd><code>019f705b-378e-7ce2-ac63-d42f0cadf6ba</code></dd>
+      <dt>Work ID</dt><dd><code>T-2026-07-20-002</code></dd>
+      <dt>Role Threads</dt><dd>Echo <code>019f6b6b-09da-7940-bcd2-774719ded20c</code>; The Boulder <code>019f6b6b-cf12-7f32-8d09-28f5663f3cc8</code>; Cricket <code>019f6b6b-a6d3-7b50-b914-6df3ef4e752c</code></dd>
+      <dt>Status</dt><dd>Implementation and independent static gates passed; publication authorized; deployment pending at record creation.</dd>
+      <dt>Record Type</dt><dd>Feature implementation, senior review, implementation QA, and publication handoff</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Request Summary</h2>
+    <p>The PI requested a real pinning feature for the correspondence website, including a small pin button in the interface. The existing fixed-top correspondence behavior had to become a removable pin rather than immutable archive data.</p>
+    <p><strong>Desired outcome:</strong> visitors can pin and unpin any correspondence, see pinned records first, and keep that preference across reloads in the same browser. <strong>Non-goals:</strong> no login, account synchronization, server database, private-data publication, redesign, correspondence renumbering, or content rewrite.</p>
+    <p><strong>Constraints and approval:</strong> PI-approved implementation and publication; one editor at a time; independent review and QA; dependency-free static GitHub Pages architecture; preserve every existing record and make infrastructure failures explicit.</p>
+  </section>
+
+  <section>
+    <h2>Execution Update</h2>
+    <p>The archive now maintains a browser-local set of pinned correspondence IDs. Records <code>045</code> and <code>048</code>, which previously used permanent <code>pinned:true</code> flags, now use seed-only <code>initiallyPinned:true</code> metadata. On a visitor's first load, those IDs initialize the local pin set. Once the visitor saves any choice, including an empty set, the seed metadata no longer forces either record back to the top.</p>
+    <ul>
+      <li>Every archive card has a real pin button placed outside its navigation link.</li>
+      <li>Every detail page has the same pin/unpin control.</li>
+      <li>Buttons expose dynamic <code>aria-pressed</code>, label, title, keyboard focus, and active styling.</li>
+      <li>Multiple pins sort first; each group retains descending date and ID ordering.</li>
+      <li>Archive search text survives a pin-triggered redraw and focus moves to the replacement button.</li>
+      <li>Malformed or unavailable storage cannot prevent rendering; current-page toggling remains available.</li>
+      <li>A storage event updates another open tab without changing the archive's route contract.</li>
+      <li>Mobile styling reserves room for the control and visually hides only its short text label, not its accessible name.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Scope Limits</h2>
+    <p>This feature is intentionally local to each browser and device. It does not synchronize pins between computers, browsers, or signed-in identities because the static site has no account or backend service. Clearing this site's browser storage resets the archive to its two initial pins.</p>
+    <p>Live Edge/Chrome visual interaction remained unavailable in the current task. The browser automation package was missing a required sibling; its bounded installation stopped on the organization's certificate issuer validation. Native browser child startup was then denied by the current medium-integrity filtered process. TLS verification and browser sandboxing were not weakened. This is a known visual-verification gap, not evidence of an application defect.</p>
+  </section>
+
+  <section>
+    <h2>Evidence</h2>
+    <ul>
+      <li>Implementation base: repository main at <code>e3f9d702c9cb616da1c97bc875a428502024ff5a</code>.</li>
+      <li>Changed implementation surfaces: <code>app.js</code>, <code>styles.css</code>, and two metadata keys in <code>correspondence.js</code>.</li>
+      <li>Echo prepared the bounded implementation diff after its sole <code>apply_patch</code> attempt was refused before file access by the documented Windows split-root wrapper.</li>
+      <li>Raven applied the reviewed diff through <code>git apply --check</code> and <code>git apply</code>. This was an integration unblock, not a platform fix.</li>
+      <li>Raven's dependency-free VM/DOM harness passed initial seed/order/markup, search/focus preservation, unpin/reload persistence, detail toggling, malformed storage recovery, unavailable-storage fallback, and storage-event synchronization.</li>
+      <li>The Boulder returned a no-findings senior review PASS on the exact three-file diff.</li>
+      <li>Cricket returned PASS on all eight acceptance criteria within the independent static-review boundary.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Conflict Status</h2>
+    <p><strong>Flag:</strong> the old data model made records permanently top-ranked, while the PI requested removable user pins. Two legacy records, not one, were found with hard-coded pin flags.</p>
+    <p><strong>Respond:</strong> silently dropping either legacy flag would change the existing first-load archive state. Keeping the old flags in sorting would prevent real unpinning.</p>
+    <p><strong>Decide:</strong> migrate every legacy hard pin into first-load seed metadata, then make browser storage the sole active pin authority.</p>
+    <p><strong>Document:</strong> this record preserves the two-record discovery, the migration rule, and the per-browser boundary.</p>
+  </section>
+
+  <section class="decision">
+    <h2>Execution Decision</h2>
+    <p><strong>Disposition: Accept.</strong> Raven accepted the reviewed implementation for publication. Browser-local persistence is the smallest solution compatible with a dependency-free static website. A synchronized account-level pin system is deliberately deferred unless the PI later requests a backend and identity model.</p>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <p>The following checks passed on the exact implementation state:</p>
+    <ul>
+      <li><code>node --check app.js</code></li>
+      <li><code>node --check correspondence.js</code></li>
+      <li><code>powershell -ExecutionPolicy Bypass -File .\scripts\verify-site.ps1</code> with 49 complete contiguous artifacts before this record</li>
+      <li><code>git diff --check</code></li>
+      <li>Raven dependency-free state/DOM harness: seven behavioral scenarios passed</li>
+      <li>The Boulder: PASS, no findings</li>
+      <li>Cricket: PASS on criteria 1 through 8 within the static-review boundary</li>
+    </ul>
+    <p><strong>Known gap:</strong> no successful live-browser visual/mobile session was available from the current filtered task. Production deployment verification therefore covers artifact, JavaScript, routing, asset, and marker readback; a human browser interaction remains a useful follow-up.</p>
+  </section>
+
+  <section>
+    <h2>Next Actions</h2>
+    <ol>
+      <li><strong>Raven:</strong> add this record to the archive index, rerun the 50-record verifier, commit, and push the exact reviewed feature.</li>
+      <li><strong>GitHub Pages:</strong> deploy the main revision; stop only when the workflow succeeds and production assets contain the pin-state markers.</li>
+      <li><strong>PI:</strong> optionally click Pin/Unpin on desktop and mobile; the stop condition is that the record moves immediately and the choice remains after reload.</li>
+      <li><strong>Future owner:</strong> if cross-device synchronization is requested, return for an explicit backend, identity, privacy, and migration decision rather than overloading local storage.</li>
+    </ol>
+  </section>
+
+  <section data-publication-addendum="true">
+    <h2>Publication Boundary</h2>
+    <h3>Public completeness</h3>
+    <p>This record includes the requested behavior, implementation boundary, migration semantics, review and QA custody, infrastructure failures, known gap, publication decision, and follow-up ownership.</p>
+    <h3>Synthetic versus real evidence</h3>
+    <p>The state harness used only public correspondence metadata and in-memory browser-state doubles. No research, clinical, participant, patient, credential, provider, or private correspondence data was used.</p>
+    <h3>Redactions and exclusions</h3>
+    <p>Machine-local profile paths, package-manager logs, browser crash output, and unrelated repository content are excluded. The error classes and verification limitations are preserved without publishing local identifiers.</p>
+    <h3>Safety and authority</h3>
+    <p>This feature changes only public archive presentation and browser-local preferences. It does not grant publication authority, change correspondence content, or create a private-data synchronization channel.</p>
+    <h3>Known gap and custody</h3>
+    <p>Raven owns deployment verification. The live-browser visual gap remains explicit until the PI or a later browser-capable QA task completes the interaction check.</p>
+  </section>
+</body>
+</html>

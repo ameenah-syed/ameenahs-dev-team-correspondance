@@ -1,11 +1,46 @@
 (() => {
   "use strict";
-  const records = [...(window.CORRESPONDENCE || [])].sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)) || b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  const records = [...(window.CORRESPONDENCE || [])];
+  const pinStorageKey = "ameenahs-dev-team-correspondence-pins";
+  const initialPinIds = records.filter((record) => record.initiallyPinned).map((record) => record.id);
+  let pinnedIds = loadPinnedIds();
+  let indexQuery = "";
   const app = document.querySelector("#app");
   const esc = (value) => String(value ?? "").replace(/[&<>'"]/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
   const bullets = (items, cls) => `<ul class="${cls}">${items.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`;
   const displayDate = (date, long = false) => new Date(date + "T12:00:00").toLocaleDateString("en-US", long ? {month:"long",day:"numeric",year:"numeric"} : {month:"short",day:"numeric",year:"numeric"});
   const links = (items) => items.map(([label,href]) => `<a class="artifact-link" href="${esc(href)}"${href.startsWith("http") ? ' target="_blank" rel="noreferrer"' : ""}>${esc(label)}<span aria-hidden="true">↗</span></a>`).join("");
+  const orderedRecords = () => [...records].sort((a, b) => Number(pinnedIds.has(b.id)) - Number(pinnedIds.has(a.id)) || b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  const pinControl = (record, className = "") => {
+    const pinned = pinnedIds.has(record.id);
+    const action = pinned ? "Unpin" : "Pin";
+    return `<button class="pin-toggle ${className}" type="button" data-pin-id="${record.id}" aria-pressed="${pinned}" aria-label="${action} correspondence ${record.id}: ${esc(record.title)}" title="${action} this correspondence"><span aria-hidden="true">&#128204;</span><span>${action}</span></button>`;
+  };
+
+  function savePinnedIds() {
+    try { window.localStorage.setItem(pinStorageKey, JSON.stringify([...pinnedIds])); } catch (_) { /* Current-page pin state remains usable. */ }
+  }
+
+  function loadPinnedIds() {
+    try {
+      const saved = window.localStorage.getItem(pinStorageKey);
+      if (saved === null) {
+        const seeded = new Set(initialPinIds);
+        window.localStorage.setItem(pinStorageKey, JSON.stringify([...seeded]));
+        return seeded;
+      }
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return new Set(parsed.filter((id) => records.some((record) => record.id === String(id))).map(String));
+    } catch (_) { /* Fall through to the initial seed when storage is unavailable or malformed. */ }
+    const seeded = new Set(initialPinIds);
+    try { window.localStorage.setItem(pinStorageKey, JSON.stringify([...seeded])); } catch (_) { /* Rendering must not depend on storage. */ }
+    return seeded;
+  }
+
+  function togglePin(id) {
+    pinnedIds.has(id) ? pinnedIds.delete(id) : pinnedIds.add(id);
+    savePinnedIds();
+  }
 
   function renderIndex() {
     document.title = "AmeenahsDevTeam Correspondence";
@@ -14,7 +49,7 @@
         <div class="eyebrow">Public engineering record</div>
         <h1>Correspondence with the receipts attached.</h1>
         <p>Consultations, decisions, execution updates, evidence, boundaries, and the next owner—kept together so context survives the handoff.</p>
-        <div class="hero-rule"><span>${records.length} records</span><span>Newest first</span><span>Searchable</span></div>
+        <div class="hero-rule"><span>${records.length} records</span><span>Pins first, then newest</span><span>Searchable</span></div>
       </section>
       <section class="archive" aria-labelledby="archive-title">
         <div class="archive-toolbar"><div><p class="kicker">Archive</p><h2 id="archive-title">Correspondence</h2></div>
@@ -24,9 +59,10 @@
         <div id="record-list" class="record-list"></div>
       </section>`;
     const input = document.querySelector("#search");
+    input.value = indexQuery;
     const draw = () => {
       const query = input.value.trim().toLowerCase();
-      const filtered = records.filter((r) => [r.id,r.title,r.dek,r.from,r.to,r.kind,r.status,r.summary,r.decision].join(" ").toLowerCase().includes(query));
+      const filtered = orderedRecords().filter((r) => [r.id,r.title,r.dek,r.from,r.to,r.kind,r.status,r.summary,r.decision].join(" ").toLowerCase().includes(query));
       document.querySelector("#result-count").textContent = query ? `${filtered.length} of ${records.length} records match “${input.value.trim()}”` : `Showing all ${records.length} records`;
       document.querySelector("#record-list").innerHTML = filtered.length ? filtered.map((r) => `
         <article class="record-card"><a href="#/correspondence/${r.id}" aria-label="Correspondence ${r.id}: ${esc(r.title)}">
@@ -34,9 +70,17 @@
           <span class="record-main"><span class="record-meta"><span>${esc(r.kind)}</span><span>${esc(r.status)}</span></span><strong>${esc(r.title)}</strong><span class="record-dek">${esc(r.dek)}</span></span>
           <span class="record-date"><time datetime="${r.date}">${displayDate(r.date)}</time><small>${r.docs} ${r.docs === 1 ? "document" : "documents"}</small></span>
           <span class="record-arrow" aria-hidden="true">↗</span>
-        </a></article>`).join("") : '<div class="empty-state"><h3>No correspondence found</h3><p>Try a person, status, topic, or record number.</p></div>';
+        </a>${pinControl(r, "card-pin")}</article>`).join("") : '<div class="empty-state"><h3>No correspondence found</h3><p>Try a person, status, topic, or record number.</p></div>';
     };
-    input.addEventListener("input", draw);
+    input.addEventListener("input", () => { indexQuery = input.value; draw(); });
+    document.querySelector("#record-list").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-pin-id]");
+      if (!button) return;
+      const id = button.dataset.pinId;
+      togglePin(id);
+      draw();
+      document.querySelector(`[data-pin-id="${id}"]`)?.focus();
+    });
     draw();
   }
 
@@ -53,6 +97,7 @@
           <a class="back-link" href="#/">← All correspondence</a>
           <div class="eyebrow">Corr ${r.id} · ${esc(r.kind)}</div>
           <div class="status-pill">${esc(r.status)}</div>
+          ${pinControl(r, "detail-pin")}
           <h1>${esc(r.title)}</h1><p>${esc(r.dek)}</p>
           <aside class="scope-banner"><strong>Scope boundary</strong><span>${esc(r.limits)}</span></aside>
         </header>
@@ -74,6 +119,11 @@
           </div>
         </div>
       </article>`;
+    document.querySelector(".detail-pin").addEventListener("click", () => {
+      togglePin(r.id);
+      renderDetail(r);
+      document.querySelector(".detail-pin").focus();
+    });
   }
 
   function route() {
@@ -83,5 +133,14 @@
     window.scrollTo({top:0,behavior:"auto"});
   }
   window.addEventListener("hashchange", route);
+  window.addEventListener("storage", (event) => {
+    if (event.key !== pinStorageKey) return;
+    try {
+      const parsed = JSON.parse(event.newValue);
+      pinnedIds = Array.isArray(parsed) ? new Set(parsed.filter((id) => records.some((record) => record.id === String(id))).map(String)) : new Set(initialPinIds);
+    } catch (_) { pinnedIds = new Set(initialPinIds); }
+    const match = location.hash.match(/^#\/correspondence\/(\d{3})/);
+    match ? renderDetail(records.find((record) => record.id === match[1])) : renderIndex();
+  });
   route();
 })();
