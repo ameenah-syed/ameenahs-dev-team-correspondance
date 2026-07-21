@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Correspondence 054 — ICVision Gates 0 and 1</title>
+  <style>
+    :root { color-scheme: light; --ink:#18212f; --muted:#5b6675; --line:#d8dee8; --paper:#fff; --wash:#f4f7fb; --accent:#244f87; --warn:#8a3b12; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--wash); color:var(--ink); font:16px/1.62 Georgia, "Times New Roman", serif; }
+    main { width:min(960px, calc(100% - 32px)); margin:32px auto; padding:48px; background:var(--paper); border:1px solid var(--line); box-shadow:0 12px 36px rgba(20,35,55,.08); }
+    h1,h2,h3 { font-family:Inter,"Segoe UI",sans-serif; line-height:1.2; }
+    h1 { margin:0 0 8px; font-size:2rem; color:var(--accent); }
+    h2 { margin-top:2.2rem; padding-bottom:.35rem; border-bottom:1px solid var(--line); font-size:1.35rem; }
+    .subtitle,.note { color:var(--muted); }
+    dl { display:grid; grid-template-columns:190px 1fr; gap:.35rem 1rem; padding:1rem; background:var(--wash); border-left:4px solid var(--accent); }
+    dt { font-weight:700; font-family:Inter,"Segoe UI",sans-serif; } dd { margin:0; }
+    .callout { margin:1.25rem 0; padding:1rem 1.15rem; border:1px solid var(--line); border-left:5px solid var(--accent); background:#f9fbfe; }
+    .warning { border-left-color:var(--warn); background:#fff8f3; }
+    table { width:100%; border-collapse:collapse; margin:1rem 0; } th,td { border:1px solid var(--line); padding:.7rem; text-align:left; vertical-align:top; } th { background:var(--wash); font-family:Inter,"Segoe UI",sans-serif; }
+    a { color:#1556a3; } footer { margin-top:3rem; padding-top:1rem; border-top:1px solid var(--line); color:var(--muted); font-size:.92rem; }
+    @media (max-width:680px) { main { padding:24px; } dl { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>ICVision Gates 0 and 1: an Offline Safety Boundary Before Raw HTTP</h1>
+    <p class="subtitle">A public-safe delivery record for the fixed endpoint-policy seam and synthetic Responses request/result contract</p>
+  </header>
+
+  <dl>
+    <dt>From</dt><dd>Raven — Engineering Delivery and Loop Coordinator</dd>
+    <dt>To</dt><dd>Human Owner / Principal Investigator and AmeenahsDevTeam engineering archive</dd>
+    <dt>Date</dt><dd>July 21, 2026</dd>
+    <dt>Re</dt><dd>Completed Gates 0 and 1 of the ICVision OpenAI modernization</dd>
+    <dt>Correspondence No.</dt><dd>054</dd>
+    <dt>Source Thread</dt><dd>PI-facing delivery coordination; identifier withheld from public record</dd>
+    <dt>Work ID</dt><dd>T-2026-07-21-004</dd>
+    <dt>Role Thread</dt><dd>Echo implementation; Cipher security review; The Boulder code review; Cricket QA</dd>
+    <dt>Status</dt><dd>Published implementation receipt; raw transport and live use remain gated</dd>
+    <dt>Record Type</dt><dd>Modernization delivery and offline-safety verification record</dd>
+  </dl>
+
+  <section>
+    <h2>Request Summary</h2>
+    <p><strong>Desired outcome:</strong> replace earlier Gate 0/1 work with a small, test-first foundation for a future project-owned Responses transport. The immediate goal was to settle compatibility and credential-routing policy, then freeze a synthetic request/result contract without connecting to any provider.</p>
+    <p><strong>Non-goals:</strong> this record does not enable raw HTTP in the production pipeline, transmit EEG-derived content, read a credential, test a gateway, select a production model, remove the SDK lane, or claim scientific improvement.</p>
+    <p><strong>Constraints:</strong> retain legacy SDK compatibility temporarily; keep raw endpoint selection profile-bound rather than caller-controlled; use only synthetic prompt and image fixtures; keep credentials, protected data, provider output, and private infrastructure details out of the public record.</p>
+  </section>
+
+  <section>
+    <h2>Execution Update</h2>
+    <p>Gate 0 and Gate 1 were replaced on the modernization branch and independently reviewed. The change adds a pure endpoint-policy boundary, a synthetic-only request and result contract, focused tests, and recurring Make targets. It deliberately does not add a production raw-client call path.</p>
+    <div class="callout">
+      <strong>What is complete:</strong> the project now has an auditable offline contract for what a future raw Responses request must look like and which safety differences from legacy SDK behavior are intentional.
+    </div>
+  </section>
+
+  <section>
+    <h2>Gate 0 — Compatibility and Credential Policy</h2>
+    <ul>
+      <li>The SDK remains the default compatibility lane, including its existing custom-endpoint behavior.</li>
+      <li>The future raw lane accepts only an immutable reviewed profile. Unknown profile names, URL-shaped profile values, raw custom-base-URL inputs, and unsupported transports fail before credential resolution or pipeline work.</li>
+      <li>Ambient endpoint, proxy, and provider-key variables do not choose or alter the raw destination. Custom certificate-authority overrides fail closed; certificate verification is not disabled.</li>
+      <li>Raw remains unavailable from the public core and command-line path at this gate. The policy module creates no client, makes no socket, and resolves no credential.</li>
+    </ul>
+    <p>This separates an important compatibility issue: preserving the SDK’s legacy flexibility does not silently authorize arbitrary credential routing in a new raw transport.</p>
+  </section>
+
+  <section>
+    <h2>Gate 1 — Offline Request and Result Contract</h2>
+    <table>
+      <thead><tr><th>Contract element</th><th>Gate 1 decision</th></tr></thead>
+      <tbody>
+        <tr><td>Fixture</td><td>Only a module-owned synthetic prompt and synthetic WebP image are accepted.</td></tr>
+        <tr><td>Request body</td><td>Immutable UTF-8 JSON bytes with a single user input whose ordered content is text followed by image.</td></tr>
+        <tr><td>Data controls</td><td>Explicit <code>store:false</code>, strict JSON-schema output, bounded output tokens, and bounded request/response/usage sizes.</td></tr>
+        <tr><td>Intentional deltas</td><td>No retry; bounded bodies and output; sanitized failure/result surface; combined content-array shape; no inherited temperature setting.</td></tr>
+        <tr><td>Result surface</td><td>Only validated classification fields, bounded normalized usage when present, and a stable sanitized outcome category. Raw response bodies, provider reason text, headers, and provider exceptions are discarded.</td></tr>
+        <tr><td>Deferred work</td><td>Actual transport construction, credential injection, timeout/concurrency enforcement, redirects, status handling, and capability checks are reserved for the next gate.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Compatibility Characterization</h2>
+    <p>The current SDK serialization was captured locally through a fake HTTP transport with real sockets and sleeping denied. The characterization found that the legacy path sends two ordered user inputs and retains a temperature setting. Gate 1 preserves the model, prompt, image bytes, MIME, and semantic ordering while explicitly recording—not hiding—the intentional safety changes.</p>
+    <p>This is a characterization contract, not a claim of byte-for-byte wire parity or gateway compatibility.</p>
+  </section>
+
+  <section>
+    <h2>Evidence</h2>
+    <ul>
+      <li>Focused offline Gate 0/1 test suite: 76 passing tests.</li>
+      <li>Cumulative modernization and legacy-compatibility target: 112 passing tests with one documented pre-existing deselection.</li>
+      <li>Formatting and whitespace checks passed.</li>
+      <li>The dedicated Make targets exercise Gate 0, Gate 1, the combined contract, and the cumulative modernization target.</li>
+      <li>Independent role review confirmed the mandatory SDK fake-transport capture; independent QA confirmed no real network, credential lookup, or patient content was used.</li>
+      <li><a href="https://github.com/cincibrainlab/autocleaneeg-icvision/commit/951178c89774bac497309853ec94accf9edf9614">Public modernization commit</a>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Scope Limits</h2>
+    <p>No live endpoint or model inventory was queried. No credential, secret store, raw or derived EEG data, participant identifier, provider response, local machine path, private gateway hostname, cost record, or deployment setting was inspected or published. Passing offline tests does not establish provider compatibility, retention behavior, model support, performance, clinical validity, or scientific benefit.</p>
+  </section>
+
+  <section>
+    <h2>Conflict Status</h2>
+    <p><strong>Flag:</strong> a raw client cannot safely inherit arbitrary caller-selected endpoint behavior without potentially routing a credential to an unreviewed destination. <strong>Respond:</strong> Gate 0 keeps legacy flexibility confined to the SDK lane and makes the raw lane profile-bound. <strong>Decide:</strong> the PI retains future authority over live endpoint profiles, credential custody, and any compatibility expansion. <strong>Document:</strong> this record preserves the resulting offline boundary and its limits.</p>
+  </section>
+
+  <section>
+    <h2>Execution Decision</h2>
+    <p>Accept Gates 0 and 1 as a reversible offline foundation. Proceed only to a separately reviewed transport increment that consumes this contract, proves its behavior with synthetic inputs, and preserves the SDK compatibility lane until live and scientific gates are independently satisfied.</p>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <p><strong>Checker identities:</strong> Echo implemented the scoped source; Cipher reviewed the security boundary; The Boulder reviewed the final code and Make integration; Cricket independently ran the acceptance checks.</p>
+    <p><strong>Exact checks:</strong> focused policy and request-contract suites, mandatory fake-transport SDK characterization, cumulative compatibility target, formatter check, whitespace check, Make-target execution, and archive validation.</p>
+    <p><strong>Known gaps:</strong> there is no raw transport implementation or live gateway test in this increment. The future transport must still prove credentials are injected only after profile validation and that timeouts, concurrency, redirects, status handling, and response-size behavior are enforced.</p>
+  </section>
+
+  <section>
+    <h2>Next Actions</h2>
+    <ol>
+      <li><strong>Owner: Raven/Echo if routed.</strong> Implement the raw transport as a narrow consumer of the frozen profile and request contract.</li>
+      <li><strong>Owner: Cipher and independent QA.</strong> Review credential injection, TLS, redirect, timeout, concurrency, and sanitized-error behavior before any live test.</li>
+      <li><strong>Owner: PI.</strong> Approve a redacted, profile-level live validation plan before protected-data use or an SDK cutover.</li>
+      <li><strong>Stop condition:</strong> stop immediately if the transport would accept an arbitrary endpoint, expose provider material, or require unreviewed credential routing.</li>
+    </ol>
+  </section>
+
+  <section data-publication-addendum="true">
+    <h2>Publication Boundary</h2>
+    <p><strong>Public-safe content:</strong> this page contains only implementation process, bounded policy, synthetic-contract design, aggregate test outcomes, and a public commit link.</p>
+    <p><strong>Withheld:</strong> credentials, secret references, endpoint hostnames, provider output, raw or derived EEG material, participant information, local paths, private logs, and any live command.</p>
+    <p><strong>Safety warning:</strong> this correspondence is not deployment authority, a live-service approval, a claim of data custody, or evidence that the scientific pipeline has been validated.</p>
+  </section>
+
+  <footer>Correspondence 054. Public archive record; source code and live-data decisions remain independently governed.</footer>
+</main>
+</body>
+</html>
