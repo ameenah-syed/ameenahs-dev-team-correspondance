@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>052 - What OpenAI pipeline modernization actually means</title>
+  <style>
+    :root{color-scheme:light;--ink:#17202a;--muted:#52606d;--line:#ccd6dd;--panel:#f5f8fa;--accent:#164e63;--warning:#8b1e1e}
+    body{max-width:1040px;margin:2rem auto;padding:0 1.25rem 3rem;color:var(--ink);font:16px/1.6 system-ui,sans-serif}
+    h1,h2,h3{line-height:1.2}h2{margin-top:2rem;border-bottom:1px solid var(--line);padding-bottom:.3rem}h3{margin-top:1.4rem}
+    dt{font-weight:700}dd{margin:0 0 .75rem}code{background:var(--panel);padding:.1rem .25rem;overflow-wrap:anywhere}
+    .meta,.notice,.decision,table{border:1px solid var(--line);background:var(--panel);padding:1rem}.notice{border-left:.35rem solid var(--warning)}.decision{border-left:.35rem solid var(--accent)}
+    table{border-collapse:collapse;width:100%;padding:0;background:white}th,td{border:1px solid var(--line);padding:.6rem;text-align:left;vertical-align:top}th{background:var(--panel)}
+    li{margin:.35rem 0}.muted{color:var(--muted)}pre{overflow-x:auto;background:#101820;color:#f5f7fa;padding:1rem;white-space:pre-wrap}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>What it really means to modernize ICVision for newer OpenAI models</h1>
+    <p class="muted">Correspondence 052 - Pipeline modernization teaching record - 2026-07-21</p>
+  </header>
+
+  <section class="notice" aria-label="Scope warning">
+    <strong>Public-safe architecture explanation.</strong> This record explains the purpose, layers, possible gains, limitations, and validation standard for modernizing ICVision's AI classification boundary. It contains no credentials, private endpoint identifier, patient-derived material, provider output, local path, or live-call instruction. Possible model-quality gains are hypotheses until evaluated against representative expert-reviewed ICA evidence.
+  </section>
+
+  <section class="meta" aria-label="Correspondence metadata">
+    <dl>
+      <dt>From</dt><dd>Raven - Engineering Delivery and Loop Coordinator</dd>
+      <dt>To</dt><dd>Human Owner / Principal Investigator and AmeenahsDevTeam engineering archive</dd>
+      <dt>Date</dt><dd>2026-07-21</dd>
+      <dt>Re</dt><dd>Purpose and capability impact of moving ICVision to newer OpenAI models and a governed API boundary</dd>
+      <dt>Correspondence Number</dt><dd>052</dd>
+      <dt>Source Thread</dt><dd><code>019f6128-8fec-7371-9304-6814b15a78fd</code></dd>
+      <dt>Work ID</dt><dd><code>T-2026-07-21-001</code></dd>
+      <dt>Role Thread</dt><dd>PI-facing Raven explanation; no worker consultation claimed</dd>
+      <dt>Status</dt><dd>Teaching record complete; PI authorized publication; implementation and scientific acceptance remain gated.</dd>
+      <dt>Record Type</dt><dd>Architecture explanation, modernization purpose, capability assessment, validation framework, and publication-boundary record</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Request Summary</h2>
+    <p>The PI asked for a beginner-accessible but thorough explanation of what “modernizing a pipeline by moving it to new OpenAI models” means, why the work exists, and what capabilities ICVision could gain.</p>
+    <p><strong>Desired outcome:</strong> distinguish a model upgrade from API, transport, security, deployment, and scientific-validation work, then define a defensible success standard. <strong>Non-goals:</strong> no model-selection decision, implementation authorization, clinical claim, endpoint call, credential inspection, patient-data transfer, cost promise, or assumption that a newer model is automatically better for EEG ICA classification.</p>
+  </section>
+
+  <section>
+    <h2>Execution Update</h2>
+    <p>Raven reviewed the public ICVision request path and current OpenAI documentation. The result is a four-layer interpretation: modernize the model, request contract, transport, and production credential/deployment boundary while preserving the existing scientific preprocessing and output meaning.</p>
+    <p>This is direct documentary work. No subordinate agent was consulted, no code was changed in ICVision, and no scientific conclusion was made.</p>
+  </section>
+
+  <section>
+    <h2>The Short Definition</h2>
+    <p>Modernization is not a one-line replacement of an old model name. It is the controlled replacement of ICVision's AI classification subsystem so that the same ICA evidence can be evaluated by an approved newer vision-capable model through a safer, explicit, testable interface.</p>
+    <p>The target outcome is: <strong>send the same scientific evidence through a governed endpoint, receive a reliable machine-readable classification, and demonstrate that the new route is at least as accurate, safe, reproducible, and operationally useful as the baseline.</strong></p>
+  </section>
+
+  <section>
+    <h2>This Is Inference, Not Model Training</h2>
+    <p>ICVision does not train the OpenAI model. It performs inference: ICVision prepares evidence, sends it to an already-trained model, and consumes the model's answer. Fine-tuning would be a separate future project with its own dataset, labels, governance, evaluation, and approval requirements.</p>
+    <p>Changing the request, endpoint, or model therefore changes how an existing model is used; it does not teach the model new EEG knowledge.</p>
+  </section>
+
+  <section>
+    <h2>Current ICVision Flow</h2>
+    <pre>EEG recording
+  -&gt; preprocessing and ICA decomposition
+  -&gt; render component evidence such as topography, spectrum, and time course
+  -&gt; save a WebP image or component strip
+  -&gt; Base64-encode the image
+  -&gt; send prompt and image through the Responses API
+  -&gt; model returns a classification
+  -&gt; parse and validate label, confidence, exclusion decision, and explanation
+  -&gt; update results and optionally apply artifact exclusion</pre>
+    <p>The inspected code already calls the Responses API through the OpenAI Python SDK. It supplies a text prompt and Base64 WebP image, uses a low sampling temperature in the current request path, parses typed response items, and applies ICVision's own validation and reporting logic.</p>
+    <p>The scientific front half—EEG preprocessing, ICA, evidence rendering, and exclusion policy—does not automatically change when the model or HTTP transport changes.</p>
+  </section>
+
+  <section>
+    <h2>The Four Modernization Layers</h2>
+    <table>
+      <thead><tr><th>Layer</th><th>What changes</th><th>What it can improve</th><th>What it cannot prove</th></tr></thead>
+      <tbody>
+        <tr><td>Model</td><td>The approved model family or tier that interprets the image and prompt.</td><td>Potential visual understanding, instruction following, reasoning, latency, and cost choices.</td><td>EEG-domain accuracy without evaluation.</td></tr>
+        <tr><td>Request contract</td><td>Input ordering, image detail, reasoning, storage, output schema, and output bound.</td><td>Reproducibility, privacy posture, predictable resource use, and parse reliability.</td><td>Scientific correctness merely because JSON is valid.</td></tr>
+        <tr><td>Transport</td><td>SDK-managed networking versus a project-owned thin HTTPS client.</td><td>Explicit destination, TLS, headers, timeouts, size limits, retries, and sanitized errors.</td><td>A smarter answer when the same request reaches the same model.</td></tr>
+        <tr><td>Production boundary</td><td>Gateway, Cloudflare routing, deployment, secret custody, and monitoring.</td><td>Controlled access, credential isolation, deployment reproducibility, rotation, audit, and rollback.</td><td>Better classification quality by itself.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Why Move to a Newer Model?</h2>
+    <p>The legitimate purpose is not novelty. It is to maintain a supported, measurable classifier and gain access to improvements that might solve observed limitations of the older route.</p>
+    <ul>
+      <li><strong>Potentially stronger visual synthesis:</strong> a newer multimodal model may better combine topography, spectrum, time course, and other plotted evidence.</li>
+      <li><strong>Tiered performance choices:</strong> model families may offer fast or inexpensive tiers and stronger quality-first tiers rather than one universal choice.</li>
+      <li><strong>Explicit reasoning control:</strong> ambiguous components could eventually receive more reasoning effort while obvious components use a cheaper path.</li>
+      <li><strong>Better interface support:</strong> modern Responses features include typed items, multimodal content, explicit storage behavior, structured output, and richer usage information.</li>
+      <li><strong>Longer useful lifetime:</strong> a clean provider boundary makes future model evaluation less invasive than editing scientific pipeline code for every model generation.</li>
+    </ul>
+    <p>OpenAI's current public guidance identifies the GPT-5.6 family as its current generation, but also warns against blind flagship substitution. A latency- or cost-sensitive vision workflow should evaluate model tiers by role and preserve the old effective reasoning behavior before tuning.</p>
+  </section>
+
+  <section>
+    <h2>Capabilities the Pipeline Could Gain</h2>
+    <h3>1. More reliable structured classifications</h3>
+    <p>Structured Outputs can constrain the model to an approved JSON Schema: required fields, known labels, Boolean exclusion state, numeric confidence bounds, and no unexpected properties. This can reduce malformed responses and parser retries.</p>
+    <p>Schema adherence is software reliability, not scientific validation. A perfectly formed result can still contain the wrong label.</p>
+
+    <h3>2. Deliberate image fidelity</h3>
+    <p>Modern vision requests can explicitly select image detail. Lower detail can reduce tokens and latency; higher or original detail can preserve small text, narrow spectral peaks, and fine topographic gradients. Omitted or automatic detail may behave differently across model generations, so the migration must make this choice deliberate and measure it.</p>
+
+    <h3>3. Adaptive reasoning and escalation</h3>
+    <p>A later, separately approved design could classify clear components cheaply, send ambiguous cases to a stronger configuration, and abstain for human review when evidence remains insufficient. This would be a genuine new pipeline capability, but it must not be smuggled into the baseline migration.</p>
+
+    <h3>4. Explicit privacy and retention behavior</h3>
+    <p>The request can set <code>store:false</code> so the generated response is not retained for later retrieval through the API. This is an important technical safeguard for research-derived inputs, but it does not replace institutional data-use approval, provider terms, or a complete retention review.</p>
+
+    <h3>5. Bounded operations</h3>
+    <p>The modernized boundary can enforce connection and read timeouts, request and response size ceilings, maximum output tokens, concurrency limits, and narrow retry rules. These controls prevent indefinite waits, oversized bodies, repeated invalid calls, and unexpected cost multiplication.</p>
+
+    <h3>6. Sanitized and classifiable failures</h3>
+    <p>Instead of logging raw provider bodies or exception text, the client can expose stable categories such as authentication failure, rate limit, timeout, provider unavailable, rejected request, invalid response, or response too large. This improves testing and operations while reducing accidental disclosure.</p>
+
+    <h3>7. Governed model flexibility</h3>
+    <p>A reviewed gateway may expose approved model tiers without giving each research application provider-level credentials. ICVision can eventually select an approved route according to measured quality, latency, and cost, while the gateway retains provider credential custody.</p>
+  </section>
+
+  <section>
+    <h2>What Does Not Automatically Improve</h2>
+    <ul>
+      <li>EEG filtering, referencing, ICA decomposition, rank handling, channel selection, and component plots remain unchanged unless separately modified.</li>
+      <li>Raw HTTP does not make the model smarter; it makes networking and trust-boundary behavior more explicit.</li>
+      <li>A newer general-purpose vision model is not automatically better at EEG ICA classification.</li>
+      <li>Structured JSON does not guarantee a scientifically correct label.</li>
+      <li>A successful request does not establish medical or clinical validation.</li>
+      <li>A smoke test proves that one path can execute; it does not prove population-level accuracy, calibration, reproducibility, or cost.</li>
+      <li>Cloudflare, containers, Kamal, 1Password, and a proxy improve operational control; none independently proves model quality.</li>
+    </ul>
+    <p>OpenAI's vision documentation identifies accuracy and specialized medical-image limitations. ICA evidence is not identical to CT or MRI, but it is specialized biosignal-derived material and still requires expert-domain validation and a research-use boundary.</p>
+  </section>
+
+  <section>
+    <h2>Why the Baseline Matters</h2>
+    <p>The baseline is the controlled “before” state. It must preserve the input recording, ICA decomposition, component indices, rendered image, prompt, labels, batch layout, and output meaning so differences can be attributed rather than guessed.</p>
+    <table>
+      <thead><tr><th>Measure</th><th>Question</th></tr></thead>
+      <tbody>
+        <tr><td>Agreement</td><td>Do the old and new routes assign the same label?</td></tr>
+        <tr><td>Human-reference performance</td><td>Which route agrees more often with expert-reviewed component labels?</td></tr>
+        <tr><td>Per-class recall</td><td>Does the new route miss eye, muscle, heart, channel, or other artifacts?</td></tr>
+        <tr><td>Calibration</td><td>Does a high confidence value correspond to high correctness?</td></tr>
+        <tr><td>Abstention</td><td>Can the system identify evidence that requires human review?</td></tr>
+        <tr><td>Format reliability</td><td>How often is the answer valid and schema-conforming?</td></tr>
+        <tr><td>Operations</td><td>What are the failure rate, latency, retry count, token usage, and cost?</td></tr>
+        <tr><td>Reproducibility</td><td>How much do repeated runs vary?</td></tr>
+        <tr><td>Custody</td><td>Are storage, logging, credentials, endpoint routing, and artifacts governed correctly?</td></tr>
+      </tbody>
+    </table>
+    <p>The prior representative smoke run is evidence that one vertical path can execute. It is not an accuracy study and should not be described as proof that a model is scientifically superior.</p>
+  </section>
+
+  <section>
+    <h2>Safe Modernization Sequence</h2>
+    <ol>
+      <li>Freeze the current request and output contract using synthetic text and a synthetic image with sockets denied.</li>
+      <li>Implement a narrow raw transport that reproduces the approved contract.</li>
+      <li>Prove SDK and raw request equivalence offline, recording only intentional safety differences.</li>
+      <li>Verify the approved gateway contract using synthetic content and runtime-injected credentials.</li>
+      <li>Run the same representative material through baseline and candidate routes under private custody.</li>
+      <li>Compare label quality, schema reliability, failures, latency, token use, and cost.</li>
+      <li>Tune only settings tied to measured failures; keep optional reasoning or routing features separate.</li>
+      <li>Retain rollback until independent review and QA verify the candidate on an exact revision.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Definition of Success</h2>
+    <p>A successful modernization preserves scientific preprocessing, constrains credentials to a reviewed endpoint, explicitly controls storage and resource bounds, prevents secrets and protected content from entering logs or public artifacts, returns a strict internal result, passes socket-denied synthetic tests, works through the approved gateway, and demonstrates comparable or better representative performance.</p>
+    <p>The durable gain is not merely access to one newer model. It is a controlled classification platform in which future models can be evaluated without silently rewriting the scientific pipeline.</p>
+  </section>
+
+  <section>
+    <h2>Scope Limits</h2>
+    <p>This record did not inspect a credential bundle, private endpoint configuration, gateway revision, provider agreement, institutional data-use authorization, Cloudflare account, 1Password vault, server, runtime logs, model inventory, or protected results. It did not select a production model, approve fine-tuning, authorize patient-data transmission, or validate a clinical use.</p>
+  </section>
+
+  <section>
+    <h2>Evidence</h2>
+    <ul>
+      <li>Read-only public ICVision inspection confirmed a Responses-based vision request, Base64 WebP input, low temperature, response-item parsing, retry behavior, and configuration drift across model-default surfaces.</li>
+      <li><a href="https://developers.openai.com/api/docs/guides/upgrading-to-gpt-5p6-sol">OpenAI model migration guidance</a> warns against blind model-string replacement and requires role-aware model, reasoning, image, parser, and evaluation review.</li>
+      <li><a href="https://developers.openai.com/api/docs/guides/images-vision">OpenAI images and vision</a> documents Base64 image inputs, multiple images, detail levels, token use, and known limitations.</li>
+      <li><a href="https://developers.openai.com/api/docs/guides/structured-outputs">OpenAI Structured Outputs</a> documents JSON Schema adherence and refusal handling.</li>
+      <li><a href="https://developers.openai.com/api/docs/guides/migrate-to-responses#responses-benefits">OpenAI Responses benefits</a> documents typed items, multimodal input, storage control, state, and future-facing API behavior.</li>
+    </ul>
+    <p><strong>Labeled inference:</strong> newer vision and reasoning capabilities could improve ICA classification or enable adaptive escalation, but only a representative domain evaluation can establish those gains.</p>
+  </section>
+
+  <section>
+    <h2>Conflict Status</h2>
+    <p><strong>Flag:</strong> “move to the new model” can incorrectly collapse model selection, raw HTTP, gateway deployment, security controls, and scientific acceptance into one change.</p>
+    <p><strong>Respond:</strong> separate the four layers, preserve behavior first, and evaluate optional capabilities independently.</p>
+    <p><strong>Decide:</strong> no final model or clinical decision is made here; the PI retains custody of compatibility, architecture, and scientific acceptance.</p>
+    <p><strong>Document:</strong> this record defines the purpose, potential gains, limitations, baseline role, and success criteria without converting possibilities into claims.</p>
+  </section>
+
+  <section class="decision">
+    <h2>Execution Decision</h2>
+    <p><strong>Disposition: Accept as the teaching and evaluation frame.</strong> Continue to treat ICVision modernization as a behavior-preserving, security-governed, evidence-measured replacement of the AI boundary. Do not call the migration successful based on a model-string change or one smoke request.</p>
+    <p><strong>Remaining PI gate:</strong> select or authorize the candidate model/profile and representative evaluation protocol after the gateway's redacted contract is verified.</p>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <p>Raven checked the explanation against the public ICVision request path and current OpenAI documentation. The archive verifier, JavaScript syntax check, Git diff check, sensitive-pattern scan, deployment workflow, and production readback are required before publication is considered complete.</p>
+    <p><strong>Known gaps:</strong> no worker or EEG expert independently reviewed this educational synthesis; no live model comparison, cost measurement, calibration study, or gateway verification was performed for this record.</p>
+  </section>
+
+  <section>
+    <h2>Next Actions</h2>
+    <ol>
+      <li><strong>PI and gateway owner:</strong> provide a redacted model-and-request capability manifest rather than secrets.</li>
+      <li><strong>Raven:</strong> reconcile this teaching frame with the revised modernization decision record.</li>
+      <li><strong>Implementation owner:</strong> preserve the offline equivalence contract before changing production behavior.</li>
+      <li><strong>Wave or authorized EEG reviewer:</strong> advise on representative expert-labeled evaluation without making the PI's final scientific decision.</li>
+      <li><strong>Stop condition:</strong> stop before protected-data use if endpoint custody, provider authorization, storage, logging, or evaluation governance remains unclear.</li>
+    </ol>
+  </section>
+
+  <section data-publication-addendum="true">
+    <h2>Publication Boundary</h2>
+    <h3>Public completeness</h3>
+    <p>This record includes the definition, inference-versus-training distinction, current flow, four modernization layers, purpose, capability opportunities, non-gains, baseline rationale, evaluation dimensions, safe sequence, and definition of success.</p>
+    <h3>Synthetic versus real evidence</h3>
+    <p>No API request, EEG input, ICA image, patient-derived material, provider response, credential, or private endpoint was used to create this record. Code inspection and public documentation were read-only.</p>
+    <h3>Redactions</h3>
+    <p>Private endpoint identifiers, credentials, gateway routing, local paths, protected baseline outputs, participant identifiers, provider output, and secret-bearing commands are withheld.</p>
+    <h3>Completeness limitation</h3>
+    <p>The architectural explanation is complete for public teaching. Model inventory, production configuration, research results, costs, and institutional approvals remain private or unverified.</p>
+    <h3>Safety and authority</h3>
+    <p>This correspondence is not permission to call an endpoint, inspect credentials, transmit research data, automate exclusion, adopt a model, remove rollback, or make clinical use claims.</p>
+  </section>
+</body>
+</html>
