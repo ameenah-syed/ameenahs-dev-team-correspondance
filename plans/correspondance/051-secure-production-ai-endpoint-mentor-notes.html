@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>051 - Secure production AI endpoint mentor notes</title>
+  <style>
+    :root{color-scheme:light;--ink:#17202a;--muted:#52606d;--line:#ccd6dd;--panel:#f5f8fa;--accent:#164e63;--warning:#8b1e1e}
+    body{max-width:1040px;margin:2rem auto;padding:0 1.25rem 3rem;color:var(--ink);font:16px/1.6 system-ui,sans-serif}
+    h1,h2,h3{line-height:1.2}h2{margin-top:2rem;border-bottom:1px solid var(--line);padding-bottom:.3rem}h3{margin-top:1.4rem}
+    dt{font-weight:700}dd{margin:0 0 .75rem}code{background:var(--panel);padding:.1rem .25rem;overflow-wrap:anywhere}
+    .meta,.notice,.decision,table{border:1px solid var(--line);background:var(--panel);padding:1rem}.notice{border-left:.35rem solid var(--warning)}.decision{border-left:.35rem solid var(--accent)}
+    table{border-collapse:collapse;width:100%;padding:0;background:white}th,td{border:1px solid var(--line);padding:.6rem;text-align:left;vertical-align:top}th{background:var(--panel)}
+    li{margin:.35rem 0}.muted{color:var(--muted)}pre{overflow-x:auto;background:#101820;color:#f5f7fa;padding:1rem}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>How a secure production AI endpoint is actually assembled</h1>
+    <p class="muted">Correspondence 051 - Corrected mentor-meeting teaching synthesis - 2026-07-21</p>
+  </header>
+
+  <section class="notice" aria-label="Scope warning">
+    <strong>Public-safe teaching record.</strong> This correspondence preserves the architectural lessons and technical corrections from handwritten mentor-meeting notes. Exact endpoint and server identifiers, credentials, OAuth material, private network details, patient-derived data, local paths, and secret-bearing commands are withheld. The build transcript is paraphrased and is not authority to modify a live service.
+  </section>
+
+  <section class="meta" aria-label="Correspondence metadata">
+    <dl>
+      <dt>From</dt><dd>Raven - Engineering Delivery and Loop Coordinator</dd>
+      <dt>To</dt><dd>Human Owner / Principal Investigator and AmeenahsDevTeam engineering archive</dd>
+      <dt>Date</dt><dd>2026-07-21</dd>
+      <dt>Re</dt><dd>Polishing and correcting handwritten notes from a mentor-led secure AI endpoint build</dd>
+      <dt>Correspondence Number</dt><dd>051</dd>
+      <dt>Source Thread</dt><dd><code>019f6128-8fec-7371-9304-6814b15a78fd</code></dd>
+      <dt>Work ID</dt><dd><code>T-2026-07-17-003</code></dd>
+      <dt>Role Thread</dt><dd>PI-facing Raven synthesis; no worker consultation claimed</dd>
+      <dt>Status</dt><dd>Teaching synthesis complete; PI authorized publication; infrastructure details redacted.</dd>
+      <dt>Record Type</dt><dd>Corrected meeting notes, architecture teaching record, build-transcript classification, and publication-boundary record</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Request Summary</h2>
+    <p>The PI supplied sparse handwritten notes from a nearly two-hour mentor meeting and asked for them to be polished, expanded where context was missing, corrected where shorthand was inaccurate, and separated from commands the mentor was issuing to a worker during the live build.</p>
+    <p><strong>Desired outcome:</strong> a durable explanation of secure production AI endpoint design that a learner can revisit without confusing architectural teaching with an operator transcript. <strong>Non-goals:</strong> no credential inspection, archive opening, server access, endpoint call, deployment, code change, patient-data processing, provider-authorization conclusion, or claim that the transcript is a verified production configuration.</p>
+  </section>
+
+  <section>
+    <h2>Execution Update</h2>
+    <p>Raven classified the notes into mentor teaching points, worker-directed implementation prompts, and statements requiring correction or qualification. Imperatives such as “fork the repository,” “deploy and health-check,” “mint a project token,” and “dispatch independent review” are therefore recorded as a reconstructed build transcript rather than universal doctrine.</p>
+    <p>No obvious credential values appeared in the notes. Public infrastructure identifiers and operational labels were nevertheless removed because they are unnecessary for teaching the design.</p>
+  </section>
+
+  <section>
+    <h2>Central Lesson and Endpoint Anatomy</h2>
+    <p>A production endpoint is not simply application code placed on a server. It is a maintained system composed of an API contract, network exposure decision, domain and DNS, edge controls, application code, container packaging, deployment automation, authentication, secret custody, monitoring, updates, rollback, and retirement.</p>
+    <p>An endpoint contract defines URL and method, authentication, request and response schemas, supported models, errors, body and token limits, timeouts, rate limits, and storage or logging behavior. Owners must decide who may call it, which operations are exposed, which credentials clients receive, which remain server-side, what may be logged, and how failures behave.</p>
+    <p>The meeting's practical goal was a secured CLIProxyAPI instance exposing approved OpenAI- and Anthropic-compatible interfaces through an organization-controlled hostname. A consumer or developer subscription does not automatically grant permission to redistribute access through a shared endpoint; credential type, intended users, provider terms, and organizational approval remain separate verification questions.</p>
+  </section>
+
+  <section>
+    <h2>Production Lifecycle</h2>
+    <ol>
+      <li>Design the architecture and trust boundaries.</li>
+      <li>Build the application and API contract.</li>
+      <li>Test offline and in staging.</li>
+      <li>Package a reproducible version.</li>
+      <li>Deploy a known revision.</li>
+      <li>Run health and security checks.</li>
+      <li>Monitor availability, performance, usage, and failures.</li>
+      <li>Rotate credentials and renew expiring material.</li>
+      <li>Update dependencies and reconcile upstream changes.</li>
+      <li>Roll back failed releases and retire obsolete versions safely.</li>
+    </ol>
+    <p>A successful first request proves only that one request worked; it does not establish secure custody, observability, rollback, or long-term production readiness.</p>
+  </section>
+
+  <section>
+    <h2>AI-Specific Concerns</h2>
+    <ul>
+      <li><strong>Authentication versus authorization:</strong> establish who calls and what that identity may do; use separate scoped credentials per project or client.</li>
+      <li><strong>Consumption:</strong> monitor request counts, tokens, model use, latency, provider errors, rate limits, abnormal traffic, and unexpected cost without logging protected bodies.</li>
+      <li><strong>Capability exposure:</strong> deliberately select text, vision, Responses, Anthropic compatibility, streaming, tools, background jobs, WebSockets, realtime functions, or MCP.</li>
+      <li><strong>Prompt injection:</strong> authentication does not prevent it; use tool allowlists, narrow permissions, validation, caller isolation, and human approval for consequential actions.</li>
+      <li><strong>Documentation:</strong> version routes, authentication, schemas, models, errors, limits, and deprecations.</li>
+      <li><strong>MCP:</strong> treat an MCP server as a later structured tool/resource surface, not a prerequisite for basic inference.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Repository and Application Ownership</h2>
+    <p>The meeting used a maintained-fork model: fork CLIProxyAPI, keep project-specific work in a private origin, configure the original project as <code>upstream</code>, make small reviewable changes, and reconcile security and feature updates. A fork creates ownership but does not eliminate maintenance.</p>
+    <p>CLIProxyAPI is implemented in Go and provides routing, authentication, hot reload, and protocol translation. Project-specific deployment configuration, security hardening, and health checks should remain distinguishable from upstream application code.</p>
+  </section>
+
+  <section>
+    <h2>Domain, DNS, Cloudflare, and the Tunnel</h2>
+    <pre>Client
+  -&gt; DNS resolution
+  -&gt; Cloudflare edge and access/security policy
+  -&gt; Cloudflare Tunnel
+  -&gt; cloudflared connector
+  -&gt; Kamal proxy
+  -&gt; CLIProxyAPI container
+  -&gt; selected AI provider</pre>
+    <p>DNS maps a hostname to the responsible infrastructure. DNS alone does not remove malicious traffic; edge access, firewall, rate-control, and application policies perform that work.</p>
+    <p><code>cloudflared</code> creates outbound connections from the origin to Cloudflare, removing the need for a publicly reachable origin IP or public inbound application port. It does not abolish ports: the local service still listens on a private TCP port or Unix socket.</p>
+    <p>Zero trust does not mean “no ports.” It means network location alone is insufficient and identities and requests must be authenticated and authorized.</p>
+    <p>The local connection from <code>cloudflared</code> to the application can use HTTP inside a tightly controlled local boundary or HTTPS for another TLS boundary. Disabling certificate verification is not a production remedy.</p>
+  </section>
+
+  <section>
+    <h2>Containers and Kamal</h2>
+    <p>Containerization makes a known revision reproducible. Kamal builds an image, pushes it to a registry, pulls it onto the server, starts a new container, waits for a health check, moves traffic through <code>kamal-proxy</code>, stops the old revision, and preserves version information for rollback.</p>
+    <p>The registry stores images; it does not itself provide runtime continuity or multi-server load balancing. Kamal deployment locks prevent unsafe concurrent operations, but they are not substitutes for human authorization to modify production. Hooks can automate pre-build, pre-deploy, and post-deploy checks when they are deterministic and secret-safe.</p>
+    <p>A shared-server preflight should examine CPU, memory, disk, containers and networks, ports, SSH routing, name collisions, active deployments, locks, and rollback capacity. Server-specific network-interface troubleshooting is an operational observation, not a universal Kamal lesson.</p>
+  </section>
+
+  <section>
+    <h2>Secret Management with 1Password</h2>
+    <p>1Password was selected as the canonical manager for tunnel, SSH, registry, deployment, provider, gateway-client, monitoring, and email credentials. The governing principle is least privilege: each credential receives the narrowest permissions and smallest blast radius that permits its job.</p>
+    <ul>
+      <li>A tunnel runtime credential should run only its tunnel.</li>
+      <li>A deployer should read only the required deployment vault.</li>
+      <li>A client key should perform inference but not administration.</li>
+      <li>A monitoring credential should not deploy containers.</li>
+      <li>Provider credentials should remain inside the gateway boundary.</li>
+    </ul>
+    <p>Centralized secret management does not mean one universal key. It means distinct credentials can be stored, rotated, revoked, audited, and injected consistently. A 1Password service-account token is itself a bootstrap secret and cannot be protected only inside the vault it must unlock.</p>
+    <p>Kamal can fetch 1Password fields without placing plaintext values in Git. Local scripts can receive secrets only for the lifetime of a launched process. Non-interactive CLI access was a project automation choice, not a universal rejection of interactive biometric approval.</p>
+  </section>
+
+  <section>
+    <h2>SSH, OAuth, and Two Authentication Layers</h2>
+    <p>“Passwordless SSH” normally means key- or agent-backed authentication, not unauthenticated access. It should retain host-key verification, attributable identity, restricted privileges, and separation between deployer and administrator.</p>
+    <p>A simplified OAuth lifecycle is authorization, grant exchange, access-token use, expiration, and optional refresh-token use. OAuth files may contain access tokens, refresh tokens, expiry, account metadata, and scopes and must be treated as credentials.</p>
+    <p>The gateway has two distinct credential boundaries: ICVision or another client authenticates to the gateway with a project-scoped key; the gateway authenticates to OpenAI or Anthropic with a server-held provider credential. The downstream application should never receive the provider credential.</p>
+  </section>
+
+  <section>
+    <h2>Responses, Chat Completions, State, and Streaming</h2>
+    <p>Chat Completions has not been removed. OpenAI states that it remains supported while Responses is recommended for new projects. Chat Completions centers message lists; Responses uses typed items that may represent messages, reasoning, tool calls, and tool results.</p>
+    <p>Proxy storage and provider-side conversation state are different concerns. A proxy can remain stateless while Responses uses <code>previous_response_id</code>, a Conversations object, or manual replay. Responses are stored by default unless <code>store:false</code> is used, and earlier context remains billable input even when a response identifier is used.</p>
+    <p>An ordinary response, a streamed response, a WebSocket, and a realtime interface are distinct. Static image classification does not automatically benefit from persistent state or bidirectional WebSockets.</p>
+  </section>
+
+  <section>
+    <h2>CORS, Security Review, and Monitoring</h2>
+    <p>CORS is a browser-enforced rule governing which web origins may read responses. It is not API authentication and does not protect against Python, CLI, server-to-server, or direct malicious requests. A non-browser ICVision client probably does not need permissive production CORS.</p>
+    <p>A security review should examine exposed and management routes, authentication, CORS, rate and body limits, timeouts, retries, secret loading, log redaction, container privileges, mounts, egress, provider allowlists, dependencies, Tunnel configuration, origin exposure, errors, rotation, and protected-data handling.</p>
+    <p>Tunnel, containers, and secret isolation reduce attack surface but do not make a service impossible to attack. Monitoring should cover availability, deploy failures, restarts, capacity, latency, error rates, consumption, authentication failures, expiration, and tunnel health. Alerts must never include credentials, complete prompts, private images, patient-derived material, or raw provider responses.</p>
+    <p>A synthetic, sanitized health check captured in a recurring Make command provides a repeatable and reviewable operational proof.</p>
+  </section>
+
+  <section>
+    <h2>Reconstructed Worker-Directed Build Transcript</h2>
+    <p>These are paraphrased worker instructions from the live meeting, not verified commands or authority to repeat them:</p>
+    <ol>
+      <li>Locate the correct Windows workspace, use a fast coding agent, and keep operations reproducible and logged.</li>
+      <li>Fork and clone CLIProxyAPI, configure private origin and public upstream, inspect supported versions, make surgical changes, open a pull request, and request independent review.</li>
+      <li>Reconnoiter the production server: capacity, Docker networks, active services, Kamal state, SSH routing, and rollback headroom.</li>
+      <li>Configure a Cloudflare hostname and Tunnel route to the internal Kamal/application service; determine its private port and prove the origin is not directly exposed.</li>
+      <li>Add Kamal registry, health, hook, preflight, lock, deploy, verification, commit, and push steps.</li>
+      <li>Create or select a 1Password vault and scoped service account, connect Kamal to secret references, and test retrieval without printing values.</li>
+      <li>Review CLIProxyAPI documentation, configure approved provider-side credentials, reload safely, verify aliases, and determine Responses support.</li>
+      <li>Prove missing and invalid gateway keys fail, mint a project-scoped client token, store it in 1Password, and let a health check retrieve it without disclosure.</li>
+      <li>Run synthetic OpenAI and Anthropic checks, codify them as Make commands, inspect security and CORS, verify management routes are closed, add observability, and prepare a protected developer handoff.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Corrections to Handwritten Shorthand</h2>
+    <table>
+      <thead><tr><th>Shorthand</th><th>Corrected meaning</th></tr></thead>
+      <tbody>
+        <tr><td>DNS removes bad actors.</td><td>DNS resolves names; edge and application policies filter traffic.</td></tr>
+        <tr><td>Tunnels remove ports.</td><td>They remove public inbound origin exposure; internal ports or sockets remain.</td></tr>
+        <tr><td>No ports is zero trust.</td><td>Zero trust requires authentication and authorization regardless of location.</td></tr>
+        <tr><td>TLS stops at Cloudflare.</td><td>Internal HTTP is one option; HTTPS to the origin is also supported.</td></tr>
+        <tr><td>The registry supplies continuity/load balancing.</td><td>The registry stores images; Kamal and its proxy switch deployment traffic.</td></tr>
+        <tr><td>The deploy lock grants production permission.</td><td>It prevents concurrent operations; human authorization is separate.</td></tr>
+        <tr><td>1Password gives one key for everything.</td><td>It centrally manages multiple separately scoped credentials.</td></tr>
+        <tr><td>Chat Completions was removed.</td><td>It remains supported; Responses is recommended for new projects.</td></tr>
+        <tr><td>Responses means the proxy stores context.</td><td>Proxy storage and provider state are independent decisions.</td></tr>
+        <tr><td>A response ID removes context cost.</td><td>Earlier context remains billable input.</td></tr>
+        <tr><td>WebSockets are simply the modern endpoint.</td><td>They serve persistent bidirectional use cases, not every request.</td></tr>
+        <tr><td>CORS secures an API.</td><td>CORS is a browser policy, not authentication.</td></tr>
+        <tr><td>Nothing can be attacked after Tunnel.</td><td>Tunnel reduces exposure but cannot eliminate code, dependency, or credential risks.</td></tr>
+        <tr><td>The deploy token can live only in its vault.</td><td>A bootstrap credential needs separate runtime custody to avoid circular dependency.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Scope Limits</h2>
+    <p>This synthesis did not inspect the mentor's repository, server, container, Cloudflare account, 1Password vault, credential bundle, OAuth files, gateway configuration, logs, routing, or provider agreements. It did not establish approval for patient-derived input. Server labels, hostnames, topology, credentials, paths, and handoff contents are absent.</p>
+  </section>
+
+  <section>
+    <h2>Evidence</h2>
+    <ul>
+      <li>The handwritten notes were read fully and classified into teaching, worker-direction, and correction categories.</li>
+      <li><a href="https://developers.cloudflare.com/tunnel/routing/">Cloudflare Tunnel routing</a> documents public-hostname to local-service routing and HTTP/HTTPS origins.</li>
+      <li><a href="https://kamal-deploy.org/docs/commands/deploy/">Kamal deployment</a> describes image delivery, health checks, proxy routing, and old-container retirement.</li>
+      <li><a href="https://kamal-deploy.org/docs/commands/lock/">Kamal locks</a> document concurrency control.</li>
+      <li><a href="https://kamal-deploy.org/docs/commands/secrets/">Kamal secrets</a> documents the 1Password adapter.</li>
+      <li><a href="https://developer.1password.com/docs/cli/secrets-scripts">1Password CLI</a> documents runtime injection and service-account least privilege.</li>
+      <li><a href="https://github.com/router-for-me/CLIProxyAPI/blob/main/docs/sdk-usage.md">CLIProxyAPI documentation</a> describes its Go routing, authentication, reload, and translation layers.</li>
+      <li><a href="https://developers.openai.com/api/docs/guides/migrate-to-responses">OpenAI Responses migration guidance</a> documents continued Chat Completions support and storage/state choices.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Conflict Status</h2>
+    <p><strong>Flag:</strong> sparse shorthand risked turning worker prompts into facts and overstated DNS, Tunnel, CORS, deployment locks, 1Password, and Responses guarantees.</p>
+    <p><strong>Respond:</strong> retain the mentor's lifecycle and security lessons while checking each technology against its actual responsibility.</p>
+    <p><strong>Decide:</strong> publish a corrected teaching synthesis and separately labeled worker transcript; preserve uncertainty about the live deployment.</p>
+    <p><strong>Document:</strong> this record preserves corrections and unresolved verification without rewriting the original private notes.</p>
+  </section>
+
+  <section class="decision">
+    <h2>Execution Decision</h2>
+    <p><strong>Disposition: Accept as a teaching record.</strong> The synthesis is publishable because it retains the reusable architecture while removing infrastructure identifiers and secret-bearing execution detail. It does not authorize deployment or prove the mentor-managed endpoint's configuration.</p>
+    <p>This record does not silently amend earlier ICVision modernization decisions. The gateway architecture requires a separate explicit decision record before implementation advances.</p>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <p>Raven checked the synthesis against the complete notes and linked primary documentation. The record contains no credential value, OAuth token, private key, patient identifier, EEG input or derivative, provider output, local machine path, exact endpoint hostname, server label, or live deploy command.</p>
+    <p><strong>Known gaps:</strong> gateway revision, request contract, Cloudflare Access, origin TLS, logging, retention, provider authorization, model mapping, direct-origin exposure, and institutional patient-data approval remain unverified.</p>
+  </section>
+
+  <section>
+    <h2>Next Actions</h2>
+    <ol>
+      <li><strong>PI and gateway owner:</strong> provide a redacted gateway manifest or attestation rather than secret values.</li>
+      <li><strong>Raven:</strong> create a separate decision record for how this gateway changes ICVision modernization.</li>
+      <li><strong>Future implementation owner:</strong> verify the contract with synthetic data and runtime-injected credentials before patient-derived inputs.</li>
+      <li><strong>Stop condition:</strong> stop on unclear provider authorization or data custody; never publish credentials, private topology, protected inputs, or raw provider output.</li>
+    </ol>
+  </section>
+
+  <section data-publication-addendum="true">
+    <h2>Publication Boundary</h2>
+    <h3>Public completeness</h3>
+    <p>This record includes system anatomy, lifecycle, AI concerns, repository ownership, Cloudflare, Kamal, 1Password, OAuth, authentication layers, Responses, streaming, CORS, security, monitoring, worker-transcript classification, corrections, and unresolved verification.</p>
+    <h3>Synthetic versus real evidence</h3>
+    <p>No endpoint request, deployment, research input, patient-derived image, or provider response was used.</p>
+    <h3>Redactions</h3>
+    <p>Endpoint and server identifiers, network observations, vault/item names, credentials, OAuth files, tunnel tokens, SSH material, local paths, handoff contents, and patient details are withheld.</p>
+    <h3>Completeness limitation</h3>
+    <p>Redaction removes operational identifiers but not teaching content. Live claims remain explicitly unverified.</p>
+    <h3>Safety and authority</h3>
+    <p>This is not authority to access the credential bundle, call the gateway, deploy with Kamal, modify Cloudflare, inspect 1Password, reuse subscription credentials, or transmit ICVision data.</p>
+  </section>
+</body>
+</html>
