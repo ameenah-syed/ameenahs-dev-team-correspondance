@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Correspondence 053 — ICVision Scientific Purpose Deep Dive</title>
+  <style>
+    :root { color-scheme: light; --ink:#18212f; --muted:#5b6675; --line:#d8dee8; --paper:#fff; --wash:#f4f7fb; --accent:#244f87; --warn:#8a3b12; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--wash); color: var(--ink); font: 16px/1.62 Georgia, "Times New Roman", serif; }
+    main { width: min(960px, calc(100% - 32px)); margin: 32px auto; padding: 48px; background: var(--paper); border: 1px solid var(--line); box-shadow: 0 12px 36px rgba(20,35,55,.08); }
+    h1, h2, h3 { font-family: Inter, "Segoe UI", sans-serif; line-height: 1.2; }
+    h1 { margin: 0 0 8px; font-size: 2rem; color: var(--accent); }
+    h2 { margin-top: 2.2rem; padding-bottom: .35rem; border-bottom: 1px solid var(--line); font-size: 1.35rem; }
+    h3 { margin-top: 1.4rem; font-size: 1.05rem; }
+    .subtitle, .note { color: var(--muted); }
+    dl { display: grid; grid-template-columns: 190px 1fr; gap: .35rem 1rem; padding: 1rem; background: var(--wash); border-left: 4px solid var(--accent); }
+    dt { font-weight: 700; font-family: Inter, "Segoe UI", sans-serif; }
+    dd { margin: 0; }
+    code, pre { font-family: Consolas, "SFMono-Regular", monospace; }
+    pre { overflow-x: auto; padding: 1rem; background: #111827; color: #f8fafc; border-radius: 6px; }
+    .callout { margin: 1.25rem 0; padding: 1rem 1.15rem; border: 1px solid var(--line); border-left: 5px solid var(--accent); background: #f9fbfe; }
+    .warning { border-left-color: var(--warn); background: #fff8f3; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid var(--line); padding: .7rem; text-align: left; vertical-align: top; }
+    th { background: var(--wash); font-family: Inter, "Segoe UI", sans-serif; }
+    a { color: #1556a3; }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .92rem; }
+    @media (max-width: 680px) { main { padding: 24px; } dl { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>What the ICVision Pipeline Is Scientifically Trying to Accomplish</h1>
+    <p class="subtitle">A code-grounded explanation of ICA component review, artifact classification, signal reconstruction, and scientific claim limits</p>
+  </header>
+
+  <dl>
+    <dt>From</dt><dd>Raven — Engineering Delivery and Loop Coordinator</dd>
+    <dt>To</dt><dd>Human Owner / Principal Investigator and AmeenahsDevTeam engineering archive</dd>
+    <dt>Date</dt><dd>July 21, 2026</dd>
+    <dt>Re</dt><dd>Scientific purpose and limitations of the ICVision EEG pipeline</dd>
+    <dt>Correspondence No.</dt><dd>053</dd>
+    <dt>Source Thread</dt><dd>PI side conversation; identifier withheld from public record</dd><dt>Work ID</dt><dd>T-2026-07-21-004</dd><dt>Role Thread</dt><dd>PI-facing Raven synthesis; no worker consultation claimed</dd>
+    <dt>Status</dt><dd>Published scientific explainer; implementation and scientific validation remain gated</dd>
+    <dt>Record Type</dt><dd>Scientific methods explainer and decision-support record</dd>
+  </dl>
+
+  <section>
+    <h2>Request Summary</h2>
+    <p><strong>Desired outcome:</strong> preserve the earlier scientific deep dive as a durable explanation of what ICVision does, why ICA component labeling matters, what information the vision model receives, how component rejection changes EEG, and what the pipeline can and cannot claim.</p>
+    <p><strong>Non-goals:</strong> this record does not authorize implementation, select preprocessing thresholds, validate a model, diagnose a participant, interpret patient EEG, approve automatic component rejection, or publish protected data.</p>
+    <p><strong>Constraints:</strong> no credentials, patient information, raw EEG, generated participant images, private gateway material, or provider output are included. The discussion is based on public repository behavior and established EEG/ICA methodology.</p>
+    <p><strong>Approval state and consultation need:</strong> the PI explicitly requested creation and publication of this correspondence. No new specialist consultation occurred in this side conversation; the record summarizes the earlier PI-facing scientific discussion.</p>
+  </section>
+
+  <section>
+    <h2>Execution Update</h2>
+    <p>Raven converted the earlier scientific discussion into a code-grounded public teaching record, separated direct repository observations from methodological inference, replaced machine-local references with durable public links, and withheld all protected research and credential material. No production code, participant data, endpoint, credential, or live provider interaction was used.</p>
+  </section>
+
+  <section>
+    <h2>Executive Answer</h2>
+    <div class="callout">
+      <strong>ICVision is trying to preserve meaningful brain-related EEG while identifying and optionally subtracting structured contamination.</strong> It does not calculate ICA. It accepts a previously computed ICA decomposition, renders evidence about each independent component, asks a vision-language model for a broad source label, and can use that result to recommend or perform component rejection during EEG reconstruction.
+    </div>
+    <p>The pipeline is therefore an <em>automated ICA-component review and artifact-rejection system</em>, not a source-separation algorithm, anatomical localization method, diagnostic system, or proof that a component is neural.</p>
+  </section>
+
+  <section>
+    <h2>1. The Scientific Problem: Scalp EEG Is a Mixture</h2>
+    <p>Each scalp electrode records a mixture of electrical processes rather than one isolated brain source. The mixture may contain neural population activity, eye blinks and saccades, facial or neck muscle activity, cardiac electrical activity, power-line interference, electrode movement, bad-channel noise, and instrumentation noise.</p>
+    <p>A simplified model is:</p>
+    <pre>x(t) = A s(t) + e(t)
+
+x(t): measured electrode voltages
+s(t): hidden source processes
+A:    how each source projects onto the electrodes
+e(t): residual noise and model mismatch</pre>
+    <p>Independent component analysis estimates an unmixing matrix <code>W</code> so that <code>s_hat(t) = W x(t)</code>. It searches for component activations that are as statistically independent and non-Gaussian as possible under an approximately linear and instantaneous mixing model. These are useful modeling assumptions, not proof that the recovered components are truly independent biological generators.</p>
+  </section>
+
+  <section>
+    <h2>2. What an Independent Component Represents</h2>
+    <p>An ICA component is a pair:</p>
+    <ol>
+      <li>a time course describing when the component is active; and</li>
+      <li>a scalp projection describing how that activation appears across electrodes.</li>
+    </ol>
+    <p>Component order, sign, and absolute scale are arbitrary. A red/blue scalp map may be polarity-inverted without changing the underlying reconstruction. A component is not automatically one neuron, one cortical region, or one physiological mechanism. One process can be split across multiple components, and one component can retain a mixture of neural and artifactual activity.</p>
+    <p>The repository requires a fitted ICA object or an EEGLAB dataset containing ICA weights; it does not fit ICA inside the classification pipeline. See <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/core.py">core.py</a> and <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/utils.py">utils.py</a>.</p>
+  </section>
+
+  <section>
+    <h2>3. What ICVision Automates</h2>
+    <pre>Precomputed ICA + continuous EEG
+        ↓
+Render evidence for each component
+        ↓
+Vision-language model assigns label, confidence, and explanation
+        ↓
+Policy decides retain, review, or exclude
+        ↓
+Selected component contributions may be removed during reconstruction</pre>
+    <p>The intended benefit is faster and more standardized review of large numbers of components. Human component review is labor-intensive and depends on experience. Automating candidate labels can support triage and reproducibility, but only validated decision rules should control irreversible scientific choices.</p>
+    <p>The repository’s taxonomy is <code>brain</code>, <code>eye</code>, <code>muscle</code>, <code>heart</code>, <code>line_noise</code>, <code>channel_noise</code>, and <code>other_artifact</code>. See <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/config.py">config.py</a>.</p>
+  </section>
+
+  <section>
+    <h2>4. Evidence Rendered for the Vision Model</h2>
+    <table>
+      <thead><tr><th>Panel</th><th>What it can suggest</th><th>What it cannot establish</th></tr></thead>
+      <tbody>
+        <tr><td>Scalp topography</td><td>Periocular, focal, broad, edge-weighted, or dipolar spatial patterns.</td><td>Exact cortical location, biological purity, task relevance, or meaningful polarity.</td></tr>
+        <tr><td>First 2.5 seconds of activation</td><td>Spikes, slow waves, bursts, and approximate periodicity.</td><td>Stability across the recording or reliable detection of intermittent events.</td></tr>
+        <tr><td>Continuous-data segment image</td><td>Repeated temporal texture, intermittent bursts, and changes across consecutive windows.</td><td>Trial-to-trial or event-related consistency because rows are arbitrary continuous chunks, not event-aligned trials.</td></tr>
+        <tr><td>Welch power spectrum</td><td>Broad 1/f-like shape, oscillatory peaks, high-frequency emphasis, and narrow interference peaks within the displayed range.</td><td>When activity occurred, causal origin, or frequencies outside the plotted range.</td></tr>
+      </tbody>
+    </table>
+    <p>Implementation details are in <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/plotting.py">plotting.py</a>.</p>
+  </section>
+
+  <section>
+    <h2>5. Important Code-to-Scientific-Claim Mismatches</h2>
+    <div class="callout warning">
+      <h3>Line-noise evidence is hidden by the default PSD range</h3>
+      <p>The prompt says that <code>line_noise</code> requires a sharp 50/60-Hz peak, but the default PSD ends at 45 Hz. Under the default rendering, the decisive evidence requested by the prompt is not visible.</p>
+    </div>
+    <div class="callout warning">
+      <h3>The “ERP image” is not a genuine ERP image</h3>
+      <p>The code mean-centers continuous activation, divides it into consecutive 1.5-second windows, and smooths across neighboring rows. The prompt calls those rows “trials,” but they are not experimental trials or event-aligned epochs. The display can show recurrent texture, but it cannot prove event-related or trial-to-trial consistency.</p>
+    </div>
+    <div class="callout warning">
+      <h3>A brief time-series excerpt can be overinterpreted</h3>
+      <p>The model sees only the first 2.5 seconds in the time-series panel. That may miss intermittent artifacts, while a coincidental two- or three-cycle pattern may look cardiac without demonstrating stable periodicity.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>6. What the Vision-Language Model Actually Does</h2>
+    <p>The model receives a written rubric and a rendered image. It performs prompted visual classification. It does not inspect the original multichannel voltage matrix, calculate ICA, correlate against dedicated EOG/ECG channels, perform dipole fitting, read event markers, or evaluate electrode impedance and acquisition context.</p>
+    <p>The returned confidence is a model-generated number, not a demonstrated calibrated probability. A reported value of 0.90 does not mean that comparable components have been shown to be correct 90% of the time. The core path places the selected class confidence into a score array rather than producing a validated seven-class probability distribution.</p>
+  </section>
+
+  <section>
+    <h2>7. How Rejection Changes the EEG</h2>
+    <p>When a component is rejected, its estimated activation is set to zero during back-projection:</p>
+    <pre>s'_j(t) = 0 for rejected components
+x_clean(t) = A s'(t)</pre>
+    <p>This does not delete contaminated time points. It removes the rejected component’s estimated contribution at every time point. That can preserve usable data during a blink, but it also removes any meaningful neural activity contained in a mixed or incorrectly rejected component. The implementation applies the ICA exclusion list to a copy of the raw recording; see <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/core.py">core.py</a>.</p>
+  </section>
+
+  <section>
+    <h2>8. Highest-Risk Current Behavior</h2>
+    <div class="callout warning">
+      <strong>Technical failure can masquerade as a confident artifact.</strong>
+      <p>Several invalid-image, parsing, connection, authentication, or response failures can fall back to <code>other_artifact</code> with confidence <code>1.0</code>. Because non-brain classes are eligible for automatic exclusion, a system failure can become a signal-removal decision. Failure must instead produce an explicit error status, confidence zero, and <code>exclude_vision=false</code>.</p>
+    </div>
+    <p><code>other_artifact</code> is also scientifically heterogeneous: it may represent mixed components, unusual neural sources, poor decompositions, ambiguous evidence, or unrecognized artifacts. It is better suited to an abstention or review queue than automatic removal without supporting validation.</p>
+    <p>Relevant classification and exclusion behavior is implemented in <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/api.py">api.py</a> and <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/core.py">core.py</a>.</p>
+  </section>
+
+  <section>
+    <h2>9. Appropriate Validation</h2>
+    <p>A defensible validation should use frozen standardized evidence, multiple blinded EEG experts, adjudication for disagreements and mixed components, and complete held-out participants or recordings rather than randomly splitting components from the same recordings.</p>
+    <p>Evaluation should report per-class confusion matrices, sensitivity, precision, macro-F1, parse failures, abstentions, expert agreement, and confidence calibration. ICLabel can serve as a useful comparator, but neither ICLabel nor a single expert should be treated as unquestionable ground truth.</p>
+    <p>Most importantly, classification agreement and cleaning safety must be evaluated separately. The study must determine whether rejection attenuates the intended artifact while preserving the ERP, spectral, connectivity, or other neural measurements the study actually cares about.</p>
+  </section>
+
+  <section>
+    <h2>10. Scientific Claim Boundary</h2>
+    <table>
+      <thead><tr><th>Supported description</th><th>Unsupported without dedicated validation</th></tr></thead>
+      <tbody>
+        <tr><td>Accepts a precomputed ICA decomposition.</td><td>Discovers or proves independent biological sources.</td></tr>
+        <tr><td>Renders conventional component evidence.</td><td>Localizes exact cortical generators.</td></tr>
+        <tr><td>Produces candidate broad-source labels.</td><td>Diagnoses participants or clinical state.</td></tr>
+        <tr><td>Creates configurable exclusion recommendations.</td><td>Produces calibrated probabilities.</td></tr>
+        <tr><td>Integrates labels and exclusions into MNE/EEGLAB-oriented workflows.</td><td>Equals expert review or ICLabel scientifically.</td></tr>
+        <tr><td>Can make large-scale review more consistent and efficient.</td><td>Guarantees that automated rejection improves a study’s result.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Evidence</h2>
+    <ul>
+      <li>Repository sources: <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/core.py">core.py</a>, <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/api.py">api.py</a>, <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/plotting.py">plotting.py</a>, <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/config.py">config.py</a>, and <a href="https://github.com/cincibrainlab/autocleaneeg-icvision/blob/main/src/icvision/utils.py">utils.py</a>.</li>
+      <li><a href="https://pubmed.ncbi.nlm.nih.gov/10946390/">Hyvärinen &amp; Oja (2000), Independent Component Analysis: Algorithms and Applications</a>.</li>
+      <li><a href="https://eeglab.org/tutorials/06_RejectArtifacts/RunICA.html">EEGLAB ICA and artifact-removal tutorial</a>.</li>
+      <li><a href="https://eeglab.org/tutorials/08_Plot_data/Plotting_ERP_images.html">EEGLAB ERP-image documentation</a>.</li>
+      <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6592775/">Pion-Tonachini et al. (2019), ICLabel</a>.</li>
+      <li><a href="https://mne.tools/stable/generated/mne.preprocessing.ICA.html">MNE ICA documentation</a>.</li>
+    </ul>
+    <p class="note">Repository behavior is direct code observation. General ICA explanations are established methodology. Statements about scientific risk or suitability are bounded methodological inferences, not participant-level interpretations.</p>
+  </section>
+
+  <section>
+    <h2>Scope Limits</h2>
+    <p>No participant recording, protected result bundle, private gateway configuration, credential, provider request, or provider response was inspected for this record. No preprocessing threshold, exclusion threshold, model default, clinical interpretation, statistical method, or final scientific acceptance criterion was selected. No claim is made that the current or modernized pipeline is validated.</p>
+  </section>
+
+  <section>
+    <h2>Conflict Status</h2>
+    <p><strong>Flag:</strong> none requiring an immediate PI decision for this explanatory record. <strong>Respond:</strong> code-to-prompt mismatches and automatic-rejection risks are documented above. <strong>Decide:</strong> future scientific thresholds and release criteria remain with the PI. <strong>Document:</strong> this correspondence is the durable public record.</p>
+  </section>
+
+  <section>
+    <h2>Execution Decision</h2>
+    <p>This record is explanatory only. It does not authorize changes to classification, plotting, transport, credentials, or automatic rejection. Its intended use is to inform future modernization and evaluation decisions while keeping transport engineering separate from scientific validation.</p>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <p><strong>Checker:</strong> side-conversation assistant self-check only; no independent specialist or QA review was performed in this side conversation.</p>
+    <p><strong>Checks:</strong> required correspondence sections, standalone HTML structure, durable public repository links, absence of credential values and patient identifiers, archive verification, JavaScript syntax, deployment workflow, and production readback.</p>
+    <p><strong>Known gaps:</strong> independent EEG-methods review remains pending. Successful publication does not validate the scientific method or authorize automated exclusion.</p>
+  </section>
+
+  <section>
+    <h2>Next Actions</h2>
+    <ol>
+      <li><strong>Owner: Raven/Wave if routed.</strong> Obtain an independent EEG-methods review before using this record as a formal validation protocol. Expected artifact: bounded methods review.</li>
+      <li><strong>Owner: Wave if routed.</strong> Independently review the scientific-language accuracy before this record supports a formal validation protocol. Expected artifact: bounded methods review.</li>
+      <li><strong>Owner: modernization team after approval.</strong> Translate the documented risks into offline tests and a separately gated scientific evaluation. Stop condition: no patient-data transmission without the relevant authorization.</li>
+    </ol>
+  </section>
+
+  <section data-publication-addendum="true">
+    <h2>Publication Boundary</h2>
+    <p><strong>Sensitivity:</strong> public-safe scientific methods explanation. It contains no credentials, participant identifiers, patient data, EEG values, private paths, endpoint hostname, or provider output. The PI explicitly authorized archive integration and publication.</p>
+    <p><strong>Synthetic-versus-real label:</strong> scientific methods summary only; no synthetic or real model experiment was executed for this record.</p>
+    <p><strong>Safety warning:</strong> do not attach participant component images, raw EEG, private result files, keys, gateway configuration, or provider bodies to a public version.</p>
+  </section>
+
+  <footer>
+    Canonical public artifact: <code>plans/correspondance/053-icvision-scientific-purpose-deep-dive.html</code>. Publication status: authorized; deployment verification required.
+  </footer>
+</main>
+</body>
+</html>
