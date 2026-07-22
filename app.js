@@ -14,7 +14,7 @@
   const pinControl = (record, className = "") => {
     const pinned = pinnedIds.has(record.id);
     const action = pinned ? "Unpin" : "Pin";
-    return `<button class="pin-toggle ${className}" type="button" data-pin-id="${record.id}" aria-pressed="${pinned}" aria-label="${action} correspondence ${record.id}: ${esc(record.title)}" title="${action} this correspondence"><span aria-hidden="true">&#128204;</span><span>${action}</span></button>`;
+    return `<button class="pin-toggle ${className}" type="button" data-pin-id="${record.id}" aria-pressed="${pinned}" aria-label="${action} correspondence ${record.id}: ${esc(record.title)}" title="${action} this correspondence"><span aria-hidden="true">&#128204;</span></button>`;
   };
 
   function savePinnedIds() {

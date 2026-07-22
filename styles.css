@@ -24,9 +24,9 @@ body{line-height:1.55}
 @media(max-width:760px){.index-hero h1{font-size:clamp(2.15rem,10vw,2.75rem)}.hero{padding:2.2rem 1.2rem}.archive-toolbar{gap:1rem}.record-card a{grid-template-columns:48px 1fr 20px;padding:.9rem .15rem}.record-dek{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.prose-grid{margin-top:2rem}.archive,.detail-body{padding:1.6rem 1.1rem}}
 /* Browser-persistent correspondence pins */
 .record-card{position:relative}
-.record-card a{padding-right:5.8rem}
-.record-card a:hover,.record-card a:focus-visible{padding-right:6.4rem}
-.pin-toggle{display:inline-flex;align-items:center;gap:.3rem;border:1px solid var(--pink-300);border-radius:999px;background:var(--paper);color:var(--pink-700);font-size:.72rem;font-weight:800;line-height:1;padding:.42rem .65rem;cursor:pointer}
+.record-card a{padding-right:3.6rem}
+.record-card a:hover,.record-card a:focus-visible{padding-right:4.2rem}
+.pin-toggle{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--pink-300);border-radius:50%;background:var(--paper);color:var(--pink-700);font-size:.86rem;font-weight:800;line-height:1;width:2.2rem;height:2.2rem;padding:0;cursor:pointer}
 .pin-toggle[aria-pressed="true"]{background:var(--pink-700);border-color:var(--pink-700);color:#fff}
 .pin-toggle:hover{border-color:var(--pink-700);background:var(--pink-50)}
 .pin-toggle[aria-pressed="true"]:hover{background:var(--pink-900)}
