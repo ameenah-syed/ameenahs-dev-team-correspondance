@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Correspondence 055 — Windows PowerShell MSI Worker Launch Recovery</title></head>
+<body><main>
+<h1>Windows PowerShell MSI recovery restored Codex worker launch</h1>
+<dl>
+<dt>From</dt><dd>Raven — Engineering Delivery and Loop Coordinator</dd>
+<dt>To</dt><dd>Human Owner / Principal Investigator and AmeenahsDevTeam engineering archive</dd>
+<dt>Date</dt><dd>July 22, 2026</dd>
+<dt>Re</dt><dd>Recovery of normal sandboxed worker-task launch on Windows</dd>
+<dt>Correspondence Number</dt><dd>055</dd>
+<dt>Source / Work / Role Thread</dt><dd>T-2026-07-22-002; PI-facing Raven coordination; Cricket independent launch check</dd>
+<dt>Status</dt><dd>Published operational recovery; platform root cause remains open</dd>
+<dt>Record Type</dt><dd>Windows execution-surface recovery and verification</dd>
+</dl>
+<section><h2>Request Summary</h2><p>Recover normal Codex worker-task launch after repeated pre-child <code>CreateProcessAsUserW failed: 5</code> failures. No UAC-policy, registry-security, WindowsApps-permission, Codex-source, credential, data, or ICVision production-code change was authorized.</p></section>
+<section><h2>Execution Update</h2><p>The Microsoft Store/MSIX PowerShell alias was the practical executable-resolution problem. The official PowerShell 7.6.4 x64 MSI was downloaded, SHA-256 verified, installed, placed first in user PATH, and followed by a full Codex restart. A fresh normal sandboxed Cricket task read required instructions and ran <code>Get-Location</code> with exit code 0.</p></section>
+<section><h2>Scope Limits</h2><p>This proves recovery of the observed worker-launch symptom only. It does not prove that the Codex restricted-token or multi-root sandbox-policy defect, every role, patch helper, network feature, or ICVision test is healthy.</p></section>
+<section><h2>Evidence</h2><ul><li>Official MSI SHA-256: <code>D11942DF52FD12470169797ABFA4781D9480EFDC81000BA4FA55A5B921ED8DD0</code>.</li><li>Installer exit code 0; Program Files PowerShell exists and reports 7.6.4.</li><li>After restart, the coordinator resolved <code>pwsh</code> to the Program Files executable.</li><li>Fresh Cricket launch check exited 0 without writes, credentials, data, or network access.</li></ul></section>
+<section><h2>Conflict Status</h2><p>Executable resolution is not a platform sandbox-policy fix. This is accepted only as an operational recovery while the upstream diagnosis remains open.</p></section>
+<section><h2>Execution Decision</h2><p>Use the restored normal worker path for scoped ICVision work. Do not weaken sandbox boundaries or claim the platform issue is closed.</p></section>
+<section><h2>Verification</h2><p>Cricket independently read project instructions and ran <code>Get-Location</code> in a fresh normal sandboxed task; it passed with exit code 0 at the intended ICVision cwd.</p></section>
+<section><h2>Next Actions</h2><ol><li>Resume approved offline ICVision Gates 2–4 with maker/checker separation.</li><li>Stop and report any new launch signature; do not bypass sandboxing.</li><li>Keep the upstream issue open until a platform-level fix is independently demonstrated.</li></ol></section>
+<section data-publication-addendum="true"><h2>Publication Boundary</h2><p>Public-safe: generic runtime version, public installer hash, diagnosis, and aggregate outcomes. Withheld: credentials, private endpoint details, secret configuration, patient/EEG material, raw logs, and private paths.</p><p><strong>Safety warning:</strong> this is not authorization to bypass sandboxing, change UAC or registry security policy, inspect secrets, or treat one worker-launch success as a security fix.</p></section>
+<p><a href="https://github.com/PowerShell/PowerShell/releases/tag/v7.6.4">Official PowerShell 7.6.4 release</a></p>
+</main></body></html>
