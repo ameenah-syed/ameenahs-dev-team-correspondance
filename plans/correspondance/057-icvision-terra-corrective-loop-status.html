@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>057 - ICVision Terra Corrective Loop Status</title>
+  <style>
+    :root { color-scheme: light; --ink:#241526; --muted:#665369; --paper:#fff8fb; --line:#ead6e4; --accent:#9b2f6b; --soft:#f8e8f1; }
+    body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:linear-gradient(180deg,#fff8fb 0%,#f7edf4 100%); color:var(--ink); line-height:1.55; }
+    main { max-width: 980px; margin: 0 auto; padding: 44px 22px 70px; }
+    article { background: rgba(255,255,255,.82); border:1px solid var(--line); border-radius:24px; box-shadow:0 18px 60px rgba(88,40,71,.12); padding: clamp(22px, 4vw, 42px); }
+    h1 { font-size: clamp(2rem, 4vw, 3.4rem); line-height:1.05; margin:0 0 12px; letter-spacing:-.04em; }
+    h2 { margin-top: 34px; color: var(--accent); font-size:1.18rem; letter-spacing:.01em; }
+    .meta, .note { color:var(--muted); }
+    .pill { display:inline-block; padding:5px 10px; border-radius:999px; background:var(--soft); border:1px solid var(--line); color:var(--accent); font-weight:700; font-size:.82rem; margin: 0 8px 8px 0; }
+    table { width:100%; border-collapse: collapse; margin: 18px 0; overflow:hidden; border-radius:16px; }
+    th, td { text-align:left; padding:12px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { background:var(--soft); color:#4e2340; }
+    tr:last-child td { border-bottom:0; }
+    ul { padding-left: 1.25rem; }
+    .callout { background:#fff1f8; border:1px solid #e9c7dc; border-left:5px solid var(--accent); padding:16px 18px; border-radius:16px; }
+    footer { margin-top:38px; font-size:.92rem; color:var(--muted); }
+  </style>
+</head>
+<body>
+<main>
+<article>
+  <p><span class="pill">Correspondence 057</span><span class="pill">Pinned</span><span class="pill">Public-safe status</span></p>
+  <h1>ICVision Terra corrective loop status</h1>
+  <p class="meta"><strong>From:</strong> Raven, Engineering Delivery and Loop Coordinator<br />
+  <strong>To:</strong> Human Owner / Principal Investigator<br />
+  <strong>Date:</strong> 2026-07-24<br />
+  <strong>Re:</strong> What the last-hour baseline comparison showed, and why the next step is a small corrective prompt loop rather than a large optimization spiral.</p>
+  <dl class="meta" data-publication-addendum="true">
+    <dt>Status</dt><dd>Published</dd>
+    <dt>Record Type</dt><dd>Public-safe engineering status correspondence</dd>
+    <dt>Source Thread</dt><dd>Side conversation publication request; inherited parent-thread details summarized without private row-level data.</dd>
+    <dt>Work Thread</dt><dd>T-2026-07-24-ICVISION</dd>
+  </dl>
+
+  <section>
+    <h2>Request Summary</h2>
+    <p>The PI asked for a clear explanation of what happened in the last hour and then asked for this information to be published and pinned on the correspondence website. This record preserves the aggregate findings in a public-safe form. It does not publish private row-level data, subject identifiers, server paths, credentials, or unpublished research artifacts.</p>
+  </section>
+
+  <section>
+    <h2>Execution Update</h2>
+    <p>The same Grace-reviewed evaluation set was confirmed for the comparison. The existing Autoclean/ICLabel baseline agreed with the expert-reviewed labels on 448 of 679 components, or 65.98%. The updated Terra prompt run agreed on 335 of 679 components, or 49.34%. The dominant Terra failure was not random degradation across every class; it was a systematic overcall of <code>channel_noise</code>: Terra predicted <code>channel_noise</code> 176 times while the expert-reviewed set contained 29 true <code>channel_noise</code> labels. That makes the next scientific move a targeted corrective loop, not broad prompt churn.</p>
+  </section>
+
+  <section>
+    <h2>Evidence</h2>
+    <table>
+      <thead><tr><th>Check</th><th>Result</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Dataset alignment</td><td>679 reviewed components compared across both baselines</td><td>The comparison is anchored to the same expert-reviewed evaluation set rather than mixed or convenience files.</td></tr>
+        <tr><td>ICLabel baseline</td><td>448 / 679 agreement, 65.98%</td><td>This is the current working baseline to beat before claiming improvement.</td></tr>
+        <tr><td>Updated Terra prompt run</td><td>335 / 679 agreement, 49.34%</td><td>The new runtime classifier is not yet competitive with the current baseline on this dataset.</td></tr>
+        <tr><td>Main Terra failure pattern</td><td>176 <code>channel_noise</code> predictions vs 29 true <code>channel_noise</code> labels</td><td>Terra appears too eager to label spatially odd or noisy-looking components as channel noise.</td></tr>
+        <tr><td>Safety boundary</td><td>No EEG or ICA mutation</td><td>The evaluation and prompt loop are read-only classifier experiments, not preprocessing changes.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Corrective-loop decision</h2>
+    <p>The first locked development subset was built to test the observed failure instead of inventing new ones: 132 unique components spanning the failure buckets that matter most, with overlapping bucket memberships preserved for analysis. The first stricter channel-noise prompt reduced some false positives and improved the failure-heavy subset overall, but it hurt true channel-noise detection and controls enough that it was rejected. The next active hypothesis is a smaller correction: treat channel noise as a class that requires electrode-localized evidence, not merely an odd topography or noisy image.</p>
+    <div class="callout"><strong>Guardrail:</strong> one observed failure, one exact change, one locked test, then keep, revert, or quarantine. This prevents the team from inventing problems and solving them theatrically.</div>
+  </section>
+
+  <section>
+    <h2>Failure-mode interpretation</h2>
+    <ul>
+      <li><strong>What seems real:</strong> Terra is over-weighting some visual signs as channel noise.</li>
+      <li><strong>What is not proven:</strong> that Terra is globally incapable, that the image renderer is wrong, or that changing many prompt sections at once would improve accuracy.</li>
+      <li><strong>What matters next:</strong> a corrective loop should improve channel-noise precision without sacrificing true channel-noise recall, eye/heart/muscle recognition, or ordinary brain controls.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Scope Limits</h2>
+    <p>This record is a public summary. It does not include row-level labels, private image files, component-level examples, credential details, server locations, or publication-grade statistical claims. The numbers are development evidence for prioritizing the next loop, not manuscript evidence.</p>
+  </section>
+
+  <section>
+    <h2>Conflict Status</h2>
+    <p>No unresolved conflict is recorded here. The operating decision is to keep accuracy as the top objective while applying Ponytail minimalism: make the smallest testable classifier change tied to the dominant observed error.</p>
+  </section>
+
+  <section>
+    <h2>Execution Decision</h2>
+    <p>Do not optimize broadly yet. Continue with a bounded corrective loop for the channel-noise overcall, compare against the locked subset and the full Grace-reviewed set, and only promote a prompt change if it improves the target failure without degrading the baseline classes that already work.</p>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <p>This correspondence was written as a static public archive artifact and paired with an index entry marked initially pinned. Site verification and JavaScript syntax checks are expected before publication. Any live GitHub Pages deployment status should be treated as verified only after the pushed archive renders the new record.</p>
+  </section>
+
+  <section>
+    <h2>Next Actions</h2>
+    <ul>
+      <li>Finish the small channel-noise corrective prompt experiment in the main work thread.</li>
+      <li>Compare corrected Terra output against the ICLabel baseline and Grace-reviewed labels.</li>
+      <li>Record whether the change is kept, reverted, or quarantined.</li>
+      <li>Preserve clean, expert-reviewed evidence separately from annotated model outputs.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Publication Boundary</h2>
+    <p>Public-safe aggregate engineering record only. No credentials, no private source paths, no patient-level data, no raw EEG/ICA data, and no row-level expert labels are published in this artifact.</p>
+  </section>
+
+  <footer>Canonical source: <code>plans/correspondance/057-icvision-terra-corrective-loop-status.html</code></footer>
+</article>
+</main>
+</body>
+</html>

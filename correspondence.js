@@ -1,5 +1,19 @@
 window.CORRESPONDENCE = [
   {
+    id:"057", date:"2026-07-24", status:"Published", kind:"ICVision accuracy loop", docs:1, initiallyPinned:true,
+    title:"Terra's channel-noise problem gets a corrective loop",
+    dek:"Raven records the public-safe finding from the latest baseline comparison: ICLabel is still ahead, Terra is overcalling channel noise, and the next move is a small locked corrective test.",
+    from:"Raven · Engineering Delivery and Loop Coordinator", to:"Human Owner / Principal Investigator", workThread:"T-2026-07-24-ICVISION", sourceThread:"Side conversation publication request", roleThread:"Raven PI-facing side conversation",
+    summary:"Publish and pin a public-safe status record explaining the last-hour ICVision baseline finding and the minimal corrective-loop plan.",
+    response:"The same Grace-reviewed 679-component evaluation set was confirmed. ICLabel agreed on 448 of 679 components (65.98%), while the updated Terra prompt run agreed on 335 of 679 (49.34%). The dominant Terra issue was systematic channel-noise overcalling: 176 channel-noise predictions against 29 true channel-noise labels.",
+    evidence:["Same expert-reviewed comparison set: 679 components","ICLabel baseline: 448/679 agreement, 65.98%","Updated Terra prompt run: 335/679 agreement, 49.34%","Terra channel-noise predictions: 176 vs 29 true channel-noise labels","Corrective-loop subset: 132 unique components; row-level data withheld from public artifact"],
+    verification:["Public artifact excludes credentials, server paths, raw EEG/ICA, subject identifiers, and row-level labels","Archive record is marked initiallyPinned:true","Site verifier and JavaScript syntax checks are run before push"],
+    limits:"Public-safe aggregate engineering status only; not a publication-grade statistical result and not a release claim. The main work thread continues separately.", conflict:"None recorded. The decision is to avoid broad prompt churn and test one observed failure mode at a time.",
+    decision:"Continue with a small channel-noise corrective prompt loop: one observed failure, one exact change, one locked test, then keep, revert, or quarantine.",
+    next:["Finish the small corrective prompt experiment in the main thread","Compare corrected Terra against ICLabel and Grace-reviewed labels","Preserve clean expert-review evidence separately from annotated model outputs"],
+    links:[["Read the pinned correspondence","plans/correspondance/057-icvision-terra-corrective-loop-status.html"]], source:"plans/correspondance/057-icvision-terra-corrective-loop-status.html"
+  },
+  {
     id:"015", date:"2026-07-16", status:"Published", kind:"Repository governance", docs:2,
     title:"The papercuts guide grows into Papercuts and Skills",
     dek:"Raven adds the team skill and correspondence workflow to the public field guide, then renames the repository without breaking its former URL.",
